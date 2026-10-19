@@ -175,8 +175,8 @@ export function CoverImageUpload({ value, onChange, onDirty }: CoverImageUploadP
 
             {/* Cropping Modal */}
             {isCropping && rawImage && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={handleCancelCrop}>
-                    <div className="bg-white rounded-[16px] shadow-2xl w-[90vw] max-w-[600px] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={handleCancelCrop}>
+                    <div className="bg-[#FFFCFA] rounded-[16px] shadow-2xl w-[90vw] max-w-[600px] flex flex-col overflow-hidden border border-[#F2EDE8]" onClick={(e) => e.stopPropagation()}>
                         <div className="px-6 py-4 border-b border-[#F2EDE8] flex items-start justify-between">
                             <div>
                                 <h3 className="font-heading font-semibold text-lg text-text-dark">Crop Cover Image</h3>

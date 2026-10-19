@@ -22,7 +22,7 @@ const TESTIMONIALS: Testimonial[] = [
     role: "Lead Frontend Engineer",
     avatar: "/testimonials/alex.png",
     content:
-      "CrushSVG transformed how our team handles vector exports. Complex SVGs become pixel-perfect PNGs in seconds — rendering headaches are completely gone.",
+      "CrushSVG transformed how our team handles vector exports. Complex SVGs become pixel-perfect PNGs in seconds. Rendering headaches are completely gone.",
     rating: 5,
   },
   {
@@ -40,7 +40,7 @@ const TESTIMONIALS: Testimonial[] = [
     role: "Creative Agency Director",
     avatar: "/testimonials/marcus.png",
     content:
-      "In our fast-paced agency, precision matters. What you preview on CrushSVG is exactly what you download — sharp, clean PNGs with zero surprises.",
+      "In our fast-paced agency, precision matters. What you preview on CrushSVG is exactly what you download: sharp, clean PNGs with zero surprises.",
     rating: 4.5,
   },
   {
@@ -67,7 +67,7 @@ const TESTIMONIALS: Testimonial[] = [
     role: "Head of Brand Design",
     avatar: "/testimonials/chloe.png",
     content:
-      "Paste raw SVG code, get a transparent PNG — it's that simple. Our marketing turnaround for social banners and ads has never been faster.",
+      "Paste raw SVG code, get a transparent PNG, it's that simple. Our marketing turnaround for social banners and ads has never been faster.",
     rating: 5,
   },
 ];
@@ -201,6 +201,7 @@ export function Testimonials() {
   const [activeDot, setActiveDot] = useState(0);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
 
   const sync = () => {
     const el = scrollRef.current;
@@ -242,10 +243,33 @@ export function Testimonials() {
     };
   }, []);
 
+  useEffect(() => {
+    if (isPaused) return;
+    const timer = setInterval(() => {
+      const el = scrollRef.current;
+      if (!el) return;
+      const max = el.scrollWidth - el.clientWidth;
+      if (max <= 0) return;
+      if (el.scrollLeft >= max - 8) {
+        el.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        const card = el.firstElementChild as HTMLElement | null;
+        const step = card ? card.offsetWidth + 24 : el.clientWidth;
+        el.scrollBy({ left: step, behavior: "smooth" });
+      }
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, [isPaused]);
+
   return (
     <section
       id="testimonials"
       className="w-full flex flex-col items-center mb-[60px] md:mb-[100px] mt-[20px] md:mt-[30px] scroll-mt-[100px] md:scroll-mt-[140px] overflow-hidden"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={() => setIsPaused(true)}
+      onTouchEnd={() => setIsPaused(false)}
     >
       {/* Heading */}
       <h2 className="font-heading font-semibold text-[24px] leading-[30px] md:text-[48px] md:leading-[61px] tracking-[0.04em] text-center text-text-dark mb-[30px] md:mb-[60px] px-4">

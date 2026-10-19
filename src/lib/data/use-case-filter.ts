@@ -19,7 +19,7 @@ export function categoryKey(category: string): string | undefined {
 export function filterUseCases(
   list: UseCase[],
   category: string,
-  query: string
+  query: string = ""
 ): UseCase[] {
   const q = query.trim().toLowerCase();
   return list.filter((uc) => {

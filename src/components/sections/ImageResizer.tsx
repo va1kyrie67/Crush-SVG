@@ -445,7 +445,7 @@ export function ImageResizer() {
             if (f) {
               e.preventDefault();
               handleFile(f);
-              showToast("success", "Image pasted from clipboard");
+              showToast("success", t("toastPasted"));
               return;
             }
           }
@@ -469,14 +469,16 @@ export function ImageResizer() {
     const isWebp = f.type === "image/webp" || f.name.toLowerCase().endsWith(".webp");
 
     if (!isPng && !isJpg && !isWebp) {
-      setError(t("errorInvalidFile"));
-      showToast("error", "Unsupported file type. Please upload PNG, JPG, or WebP.");
+      const msg = "Unsupported file format. Please upload PNG, JPG, or WebP.";
+      setError(msg);
+      showToast("error", msg);
       return;
     }
 
     if (f.size > MAX_FILE_SIZE_BYTES) {
-      setError(t("errorTooLarge"));
-      showToast("error", "Image exceeds 10MB limit.");
+      const msg = "Image exceeds 10MB limit.";
+      setError(msg);
+      showToast("error", msg);
       return;
     }
 
@@ -499,6 +501,7 @@ export function ImageResizer() {
         setTargetHeight(String(dims.height));
       };
       img.src = url;
+      showToast("success", t("toastImageLoaded"));
     };
     reader.readAsDataURL(f);
   }
@@ -506,7 +509,14 @@ export function ImageResizer() {
   function handleDrop(e: React.DragEvent) {
     e.preventDefault();
     setDragOver(false);
-    handleFile(e.dataTransfer.files?.[0]);
+    const file = e.dataTransfer.files?.[0];
+    if (!file) {
+      const msg = "Unsupported file type. Please upload PNG, JPG, or WebP.";
+      setError(msg);
+      showToast("error", msg);
+      return;
+    }
+    handleFile(file);
   }
 
   // ── Width/Height change with aspect ratio lock ─────────────────────────────
@@ -569,13 +579,13 @@ export function ImageResizer() {
     try {
       sessionStorage.removeItem(STORAGE_KEY);
     } catch {}
-    showToast("success", "Cleared image and settings");
+    showToast("success", t("toastCleared"));
   }
 
   // ── Client-side resize using Canvas ────────────────────────────────────────
   async function handleResize() {
     if (!dataUrl) {
-      showToast("error", "No image selected. Upload an image to get started.");
+      showToast("error", t("toastNoImage"));
       return;
     }
 
@@ -584,13 +594,13 @@ export function ImageResizer() {
 
     if (!w || !h || w < 1 || h < 1) {
       setError(t("errorInvalidDimensions"));
-      showToast("error", "Invalid dimensions.");
+      showToast("error", t("errorInvalidDimensions"));
       return;
     }
 
     if (w > 10000 || h > 10000) {
       setError(t("errorMaxDimensions"));
-      showToast("error", "Dimensions exceed 10,000px limit.");
+      showToast("error", t("errorMaxDimensions"));
       return;
     }
 
@@ -643,7 +653,7 @@ export function ImageResizer() {
         height: h,
       });
       setPreviewMode("after");
-      showToast("success", "Image resized! Ready to download.");
+      showToast("success", t("toastResizeComplete"));
       void trackConversionUsage({
         inputFormat: imageName?.split(".").pop()?.toLowerCase() || "image",
         outputFormat,
@@ -673,7 +683,7 @@ export function ImageResizer() {
     a.click();
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 100);
-    showToast("success", "Your download has started");
+    showToast("success", t("toastDownloadStarted"));
   }
 
   // ── Derived ────────────────────────────────────────────────────────────────

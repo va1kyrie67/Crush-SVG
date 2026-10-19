@@ -9,7 +9,7 @@ import { showToast } from "@/lib/client/toast-bridge";
 import { ApiError, authFetch } from "@/lib/client/http";
 import { IMAGES } from "@/lib/shared/images";
 import { API_DOCS_PATH } from "@/lib/openapi/constants";
-import { getLocalizedHref, type Locale } from "@/i18n/routing";
+import { getLocalizedHref, type Locale, Link } from "@/i18n/routing";
 import { saveAuthRedirectUrl } from "@/lib/client/auth-redirect";
 
 export function ProfileDashboardUI() {
@@ -24,6 +24,7 @@ export function ProfileDashboardUI() {
   const [copiedKey, setCopiedKey] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedBaseUrl, setCopiedBaseUrl] = useState(false);
+  const [copiedUid, setCopiedUid] = useState(false);
   const [isGeneratingKey, setIsGeneratingKey] = useState(false);
   const [isRevokingKey, setIsRevokingKey] = useState(false);
 
@@ -324,6 +325,60 @@ curl_close($ch);
       <div className="w-full h-auto border-none md:border md:border-dashed md:border-[#8F8F8F] rounded-none md:rounded-[32px] p-0 md:p-[12px] transition-all duration-300 lg:min-h-[500px]">
         {/* Inner Dashed Border Box */}
         <div className="w-full h-auto bg-transparent md:bg-[#FFFFFF] border-none md:border md:border-dashed md:border-[#8F8F8F] rounded-none md:rounded-[24px] flex flex-col justify-center px-0 md:px-[40px] py-[20px] transition-all duration-300 lg:min-h-[476px]">
+          {/* User Account Details Card */}
+          <div className="w-full bg-[#FAF6F3] border border-[#E8DED7] rounded-[16px] p-4 md:p-5 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-tr from-[#D94A1E] to-[#FF9A3D] text-white flex items-center justify-center font-heading font-bold text-lg shrink-0 shadow-xs">
+                {user?.photoURL ? (
+                  <img src={user.photoURL} alt={user.displayName || "User"} className="w-full h-full object-cover" />
+                ) : (
+                  <span>{(user?.displayName?.[0] || user?.email?.[0] || "U").toUpperCase()}</span>
+                )}
+              </div>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <span className="font-heading font-bold text-base text-text-dark">
+                    {user?.displayName || "CrushSVG Member"}
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold uppercase bg-brand-primary/10 text-brand-primary border border-brand-primary/20">
+                    {user?.role || "Free Plan"}
+                  </span>
+                </div>
+                <span className="font-body text-xs text-[#64748B]">{user?.email || "No email available"}</span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+              <div className="flex items-center gap-1.5 bg-white border border-[#E2E8F0] px-2.5 py-1.5 rounded-lg text-xs font-mono text-[#475569]">
+                <span>ID: {user?.uid ? `${user.uid.slice(0, 10)}...` : "—"}</span>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (!user?.uid) return;
+                    await navigator.clipboard.writeText(user.uid);
+                    setCopiedUid(true);
+                    setTimeout(() => setCopiedUid(false), 2000);
+                    showToast("success", "User ID copied!");
+                  }}
+                  className="hover:text-brand-primary transition-colors cursor-pointer"
+                  title="Copy User ID"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                </button>
+              </div>
+
+              <Link
+                href="/forgot-password"
+                className="px-3 py-1.5 bg-white border border-[#E2E8F0] hover:border-brand-primary rounded-lg text-xs font-medium text-text-dark hover:text-brand-primary transition-colors"
+              >
+                Reset Password
+              </Link>
+            </div>
+          </div>
+
           {/* Top row with columns */}
           <div className="flex flex-col lg:flex-row lg:items-start justify-center w-full gap-[24px] md:gap-[30px]">
             
@@ -515,7 +570,7 @@ curl_close($ch);
               <div className="relative w-full h-[200px] md:h-[302px] rounded-[16px] border border-[#8F8F8F] bg-[#FFFFFF] overflow-hidden focus-within:border-brand-primary transition-colors">
                 {/* absolute: long snippet lines must not feed the page's intrinsic
                     width (the layout wrapper is shrink-to-fit), only scroll here. */}
-                <pre className="absolute inset-0 p-3 md:p-4 outline-none border-none bg-transparent font-mono text-[12.5px] leading-[1.6] text-black whitespace-pre overflow-auto brand-scrollbar">
+                <pre className="absolute inset-0 p-3 md:p-4 outline-none border-none bg-transparent font-mono text-[12.5px] leading-[1.6] text-black whitespace-pre overflow-x-auto overflow-y-scroll brand-scrollbar">
                   {codeSnippets[selectedEndpoint][selectedLang]}
                 </pre>
                 <div className="absolute bottom-0 left-0 right-[16px] h-[13px] md:h-[21px] bg-[#FFFFFF] pointer-events-none rounded-bl-[16px]" />
@@ -611,7 +666,7 @@ curl_close($ch);
           </div>
 
           {/* Bottom Primary Action Button */}
-          <div className="w-full flex justify-center mt-[30px] md:mt-[40px]">
+          <div className="w-full flex justify-end mt-[30px] md:mt-[40px]">
             {/* Plain <a>: Button's i18n Link would add a locale prefix, and
                 the docs page only exists at the unprefixed path. Classes mirror
                 Button variant="solid". */}

@@ -137,6 +137,36 @@ const nextConfig: NextConfig = {
         destination: '/:locale',
         permanent: true,
       },
+      {
+        source: '/terms-of-service',
+        destination: '/terms',
+        permanent: true,
+      },
+      {
+        source: '/:locale/terms-of-service',
+        destination: '/:locale/terms',
+        permanent: true,
+      },
+      {
+        source: '/about-us',
+        destination: '/about',
+        permanent: true,
+      },
+      {
+        source: '/:locale/about-us',
+        destination: '/:locale/about',
+        permanent: true,
+      },
+      {
+        source: '/our-team',
+        destination: '/team',
+        permanent: true,
+      },
+      {
+        source: '/:locale/our-team',
+        destination: '/:locale/team',
+        permanent: true,
+      },
     ];
   },
 };

@@ -7,6 +7,8 @@ import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
 import { existsSync } from 'fs'
 
+import { uploadImage } from '@/lib/integrations/cloudinary'
+
 export const runtime = 'nodejs'
 
 export async function POST(request: NextRequest) {
@@ -37,20 +39,44 @@ export async function POST(request: NextRequest) {
         const bytes = await file.arrayBuffer()
         const buffer = Buffer.from(bytes)
 
-        const uploadDir = join(process.cwd(), 'public', 'uploads', 'blog')
-        if (!existsSync(uploadDir)) {
-            await mkdir(uploadDir, { recursive: true })
+        // 1. If Cloudinary is configured, upload to Cloudinary
+        if (
+            process.env.CLOUDINARY_CLOUD_NAME && 
+            process.env.CLOUDINARY_CLOUD_NAME !== "dummy" &&
+            process.env.CLOUDINARY_API_KEY && 
+            process.env.CLOUDINARY_API_KEY !== "dummy"
+        ) {
+            try {
+                const cloudResult: any = await uploadImage(buffer, "crushsvg/blog")
+                if (cloudResult?.secure_url) {
+                    return successResponse({ url: cloudResult.secure_url }, 200, rateLimitHeaders(rl), request)
+                }
+            } catch (cloudErr) {
+                console.warn("Cloudinary upload failed, attempting local fallback:", cloudErr)
+            }
         }
 
-        const extension = file.name.split('.').pop()?.toLowerCase() || 'png'
-        const filename = `blog-${uuidv4()}.${extension}`
-        const filepath = join(uploadDir, filename)
+        // 2. Try writing to local public folder (works in standard Node.js server)
+        try {
+            const uploadDir = join(process.cwd(), 'public', 'uploads', 'blog')
+            if (!existsSync(uploadDir)) {
+                await mkdir(uploadDir, { recursive: true })
+            }
 
-        await writeFile(filepath, buffer)
+            const extension = file.name.split('.').pop()?.toLowerCase() || 'png'
+            const filename = `blog-${uuidv4()}.${extension}`
+            const filepath = join(uploadDir, filename)
 
-        const url = `/uploads/blog/${filename}`
-
-        return successResponse({ url }, 200, rateLimitHeaders(rl), request)
+            await writeFile(filepath, buffer)
+            const url = `/uploads/blog/${filename}`
+            return successResponse({ url }, 200, rateLimitHeaders(rl), request)
+        } catch (fsErr) {
+            // 3. Fallback for read-only serverless filesystems
+            console.warn("Local filesystem write failed, using base64 fallback:", fsErr)
+            const mimeType = file.type || 'image/png'
+            const dataUri = `data:${mimeType};base64,${buffer.toString('base64')}`
+            return successResponse({ url: dataUri }, 200, rateLimitHeaders(rl), request)
+        }
     } catch (error) {
         console.error('Image upload failed:', error)
         return errorResponse(500, 'upload_failed', 'Failed to upload image', undefined, request)

@@ -240,45 +240,6 @@ function VectorDropdown({
                   <span className="font-body text-[11px] md:text-[12px] text-[#64748B]">
                     {opt.desc}
                   </span>
-
-                  {opt.value === "Custom" && onCustomColorChange && customColor && (
-                    <div
-                      onClick={(e) => e.stopPropagation()}
-                      className="mt-1.5 pt-1.5 border-t border-gray-200/80 px-[10px] py-[6px] flex items-center gap-[5px] bg-[#FAF9F6] flex-wrap shrink-0"
-                    >
-                      {COLOR_PRESETS.map((c) => (
-                        <button
-                          key={c.hex}
-                          type="button"
-                          title={c.name}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onCustomColorChange(c.hex);
-                          }}
-                          className={`w-[14px] h-[14px] rounded-full border border-gray-300 transition-transform shrink-0 ${
-                            customColor.toLowerCase() === c.hex.toLowerCase()
-                              ? "scale-115 ring-2 ring-brand-primary"
-                              : "hover:scale-105"
-                          }`}
-                          style={{ backgroundColor: c.hex }}
-                        />
-                      ))}
-                      <input
-                        type="color"
-                        value={customColor}
-                        onChange={(e) => onCustomColorChange(e.target.value)}
-                        className="w-[16px] h-[16px] p-0 border-none rounded cursor-pointer shrink-0"
-                        aria-label="Pick custom color"
-                      />
-                      <input
-                        type="text"
-                        value={customColor}
-                        onChange={(e) => onCustomColorChange(e.target.value)}
-                        maxLength={7}
-                        className="w-[50px] h-[20px] px-1 font-mono text-[10px] border border-gray-300 rounded outline-none focus:border-brand-primary uppercase text-center ml-auto"
-                      />
-                    </div>
-                  )}
                 </div>
               );
             })}
@@ -554,24 +515,39 @@ export function RasterToSvgConverter() {
     if (!file) return;
     setError(null);
 
-    const isPng = file.type === "image/png" || file.name.toLowerCase().endsWith(".png");
+    // Reject SVG files explicitly
+    if (file.type.includes("svg") || file.name.toLowerCase().endsWith(".svg")) {
+      const msg = "SVG files cannot be converted to SVG. Please upload a PNG image.";
+      setError(msg);
+      showToast("error", msg);
+      return;
+    }
+
+    // Reject JPG files explicitly on PNG to SVG tool
     const isJpg =
       file.type === "image/jpeg" ||
       file.name.toLowerCase().endsWith(".jpg") ||
       file.name.toLowerCase().endsWith(".jpeg");
-    const isWebp = file.type === "image/webp" || file.name.toLowerCase().endsWith(".webp");
-
-    if (!isPng && !isJpg && !isWebp) {
-      setError(t("errorInvalidFile"));
-      showToast("error", t("errorInvalidFile"));
+    if (isJpg) {
+      const msg = "JPG files are not supported in PNG to SVG. Please upload a PNG image.";
+      setError(msg);
+      showToast("error", msg);
       return;
     }
 
-      if (file.size > MAX_FILE_SIZE_BYTES) {
-        setError(t("errorTooLarge"));
-        showToast("error", t("errorTooLarge"));
-        return;
-      }
+    const isPng = file.type === "image/png" || file.name.toLowerCase().endsWith(".png");
+    if (!isPng) {
+      const msg = "Unsupported file format. Please upload a valid PNG image.";
+      setError(msg);
+      showToast("error", msg);
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      setError(t("errorTooLarge"));
+      showToast("error", t("errorTooLarge"));
+      return;
+    }
 
     setRasterFile(file);
     setImageName(file.name);
@@ -588,6 +564,7 @@ export function RasterToSvgConverter() {
         setImageDims({ width: img.naturalWidth, height: img.naturalHeight });
       };
       img.src = dataUrl;
+      showToast("success", t("toastImageLoaded"));
     };
     reader.readAsDataURL(file);
   }
@@ -595,7 +572,14 @@ export function RasterToSvgConverter() {
   function handleDrop(e: React.DragEvent) {
     e.preventDefault();
     setDragOver(false);
-    void handleFile(e.dataTransfer.files?.[0]);
+    const file = e.dataTransfer.files?.[0];
+    if (!file) {
+      const msg = "Please select a valid PNG image.";
+      setError(msg);
+      showToast("error", msg);
+      return;
+    }
+    void handleFile(file);
   }
 
   function handleClear() {
@@ -852,8 +836,8 @@ export function RasterToSvgConverter() {
                   ref={fileInputRef}
                   id="raster-file-upload"
                   type="file"
-                  aria-label="Upload PNG or JPG image file"
-                   accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
+                  aria-label="Upload PNG image file"
+                  accept=".png,image/png"
                   className="absolute w-0 h-0 opacity-0 overflow-hidden"
                   onChange={(e) => {
                     void handleFile(e.target.files?.[0]);
@@ -924,7 +908,7 @@ export function RasterToSvgConverter() {
                           borderRadius: "inherit",
                         }}
                       />
-                      <div className={`absolute inset-0 z-0 opacity-0 ${converting ? '' : 'group-hover/btn:opacity-100'} transition-opacity duration-300 ease-in-out pointer-events-none bg-gradient-to-r from-[#D94A1E] to-[#FF9A3D]}`} />
+                      <div className={`absolute inset-0 z-0 opacity-0 ${converting ? '' : 'group-hover/btn:opacity-100'} transition-opacity duration-300 ease-in-out pointer-events-none bg-gradient-to-r from-[#D94A1E] to-[#FF9A3D]`} />
                       <span className={`relative z-10 text-[#D94A1E] ${converting ? '' : 'group-hover/btn:text-white'} transition-colors duration-300 ease-in-out`}>
                         Replace Image
                       </span>
@@ -1182,7 +1166,7 @@ export function RasterToSvgConverter() {
                           {copiedCode ? t("copied") : t("copyCode")}
                         </button>
                       </div>
-                      <pre className="flex-1 min-w-0 min-h-0 overflow-auto font-mono text-[12px] md:text-[13px] leading-[1.5] text-[#4B5563] brand-scrollbar whitespace-pre-wrap break-all select-text [scrollbar-gutter:stable]">
+                      <pre className="flex-1 min-w-0 min-h-0 overflow-y-auto overflow-x-hidden font-mono text-[12px] md:text-[13px] leading-[1.5] text-[#4B5563] brand-scrollbar whitespace-pre-wrap break-all select-text [scrollbar-gutter:stable]">
                         {result.svg}
                       </pre>
                     </div>
@@ -1329,6 +1313,60 @@ export function RasterToSvgConverter() {
                     />
                   </div>
 
+                  {/* Dedicated Custom Background Color Card */}
+                  {rasterBackground === "Custom" && (
+                    <div className="mt-3 p-3.5 rounded-[14px] border border-[#CBD5E1] bg-[#FAF9F6] flex flex-col gap-2.5 shadow-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="font-heading font-semibold text-[13px] text-text-dark">
+                          Custom Background Color
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="color"
+                            value={rasterBgColor}
+                            onChange={(e) => {
+                              const hex = normalizeHex(e.target.value);
+                              setRasterBgColor(hex);
+                              setResult(null);
+                            }}
+                            className="w-7 h-7 rounded-lg border border-[#CBD5E1] cursor-pointer p-0 bg-transparent shrink-0"
+                            aria-label="Pick custom background color"
+                          />
+                          <input
+                            type="text"
+                            value={rasterBgColor}
+                            onChange={(e) => {
+                              const hex = normalizeHex(e.target.value);
+                              setRasterBgColor(hex);
+                              setResult(null);
+                            }}
+                            maxLength={7}
+                            className="w-[74px] h-[30px] px-2 font-mono text-[12px] font-medium border border-[#CBD5E1] rounded-[6px] outline-none focus:border-brand-primary uppercase text-center bg-white"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 flex-wrap pt-2 border-t border-[#F2EDE8]">
+                        <span className="text-[11px] font-body text-[#64748B] mr-1">Presets:</span>
+                        {COLOR_PRESETS.map((c) => (
+                          <button
+                            key={c.hex}
+                            type="button"
+                            title={c.name}
+                            onClick={() => {
+                              setRasterBgColor(c.hex);
+                              setResult(null);
+                            }}
+                            className={`w-6 h-6 rounded-full border border-gray-300 transition-all cursor-pointer ${
+                              rasterBgColor.toLowerCase() === c.hex.toLowerCase()
+                                ? "scale-110 ring-2 ring-brand-primary ring-offset-1"
+                                : "hover:scale-105"
+                            }`}
+                            style={{ backgroundColor: c.hex }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Error Banner */}

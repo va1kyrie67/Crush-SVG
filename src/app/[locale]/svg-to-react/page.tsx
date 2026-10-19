@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { constructLocalizedMetadata, DEFAULT_KEYWORDS } from "@/lib/seo";
 import { Hero } from "@/components/sections/Hero";
@@ -67,7 +67,7 @@ export default async function SvgToReactPage({
   const tTools = await getTranslations({ locale, namespace: "tool_pages.svgToReact" });
 
   return (
-    <div className="w-full min-w-0 max-w-full flex flex-col items-center">
+    <div className="w-full min-w-0 max-w-full overflow-x-hidden flex flex-col items-center">
       <Hero
         title={renderHeroTitle(tTools("h1"))}
         subtitle={tTools("subtitle")}

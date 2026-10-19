@@ -16,7 +16,7 @@ import { parseSvgDimensions } from "@/lib/svg/svg-dims";
 import { showToast } from "@/lib/client/toast-bridge";
 import { trackConversion } from "@/lib/client/analytics";
 import { useAuth } from "@/lib/client/auth-context";
-import { getUsage } from "@/lib/client/sessions";
+import { getUsage, trackConversionUsage } from "@/lib/client/sessions";
 import { resolveQuotaDisplay } from "@/lib/client/quota";
 import { getAccessToken } from "@/lib/client/http";
 import type { UsageInfo } from "@/lib/shared/shared-types";
@@ -80,19 +80,44 @@ export function SvgToCodeUI() {
   const tUsage = useTranslations("usage");
   const tA11y = useTranslations("accessibility");
 
-  const [svgInput, setSvgInput] = useState<string>(SAMPLE_SVGS.rocket.svg);
-  const [componentName, setComponentName] = useState<string>("RocketIcon");
+  const [svgInput, setSvgInput] = useState<string>("");
+  const [componentName, setComponentName] = useState<string>("");
   const [activeTab, setActiveTab] = useState<TargetFramework>("react-tsx");
   const [currentColor, setCurrentColor] = useState<boolean>(true);
   const [forwardRef, setForwardRef] = useState<boolean>(false);
   const [dragOver, setDragOver] = useState<boolean>(false);
   const [copiedCode, setCopiedCode] = useState<boolean>(false);
+  const [copiedSvgCode, setCopiedSvgCode] = useState<boolean>(false);
   const [copiedDataUri, setCopiedDataUri] = useState<boolean>(false);
+  const [copiedImage, setCopiedImage] = useState<boolean>(false);
   const [usage, setUsage] = useState<UsageInfo | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { status, sessionVersion } = useAuth();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = localStorage.getItem("crush_usage_info");
+        if (cached) {
+          const parsed = JSON.parse(cached) as UsageInfo;
+          if (parsed && typeof parsed.conversionsUsed === "number") {
+            setUsage(parsed);
+          }
+        }
+      } catch {}
+    }
+
+    const onUsageUpdated = (e: Event) => {
+      const custom = e as CustomEvent<UsageInfo>;
+      if (custom.detail) setUsage(custom.detail);
+    };
+    window.addEventListener("crushUsageUpdated", onUsageUpdated);
+    return () => {
+      window.removeEventListener("crushUsageUpdated", onUsageUpdated);
+    };
+  }, []);
 
   // Conversion usage shown on the code card header. `/api/v1/usage` is the
   // single source of truth: it reports `limit` (3 guest/unverified, 5 verified)
@@ -107,6 +132,9 @@ export function SvgToCodeUI() {
       .then((u) => {
         if (!cancelled) {
           setUsage(u);
+          try {
+            localStorage.setItem("crush_usage_info", JSON.stringify(u));
+          } catch {}
         }
       })
       .catch(() => {
@@ -132,7 +160,7 @@ export function SvgToCodeUI() {
 
   const options: SvgToCodeOptions = useMemo(
     () => ({
-      componentName,
+      componentName: componentName || "Icon",
       currentColor,
       forwardRef,
     }),
@@ -149,7 +177,10 @@ export function SvgToCodeUI() {
   }, [svgInput, activeTab, options]);
 
   async function handleFile(file: File | undefined | null) {
-    if (!file) return;
+    if (!file) {
+      showToast("error", t("invalidSvgFile"));
+      return;
+    }
     if (!file.type.includes("svg") && !file.name.toLowerCase().endsWith(".svg")) {
       showToast("error", t("invalidSvgFile"));
       return;
@@ -160,6 +191,13 @@ export function SvgToCodeUI() {
     }
     try {
       const text = await file.text();
+      if (!isValidSvgContent(text)) {
+        showToast("error", t("invalidSvgFile"));
+        return;
+      }
+      if (/<(?:[A-Za-z_][\w.-]*:)?script\b|\bon[a-z]+\s*=|javascript:|vbscript:/i.test(text)) {
+        showToast("info", t("toastSanitized"));
+      }
       setSvgInput(text.trim());
       const baseName = file.name.replace(/\.svg$/i, "");
       setComponentName(baseName.replace(/[^a-zA-Z0-9_-]/g, "") || "CustomIcon");
@@ -172,16 +210,16 @@ export function SvgToCodeUI() {
   function handleDrop(e: React.DragEvent) {
     e.preventDefault();
     setDragOver(false);
-    void handleFile(e.dataTransfer.files?.[0]);
+    const file = e.dataTransfer.files?.[0];
+    if (!file) {
+      showToast("error", t("invalidSvgFile"));
+      return;
+    }
+    void handleFile(file);
   }
 
   /**
    * Copies the previewed SVG to the system clipboard as a real image.
-   *
-   * Clipboard writes only accept raster image types in practice — `image/svg+xml`
-   * is unsupported by Chrome, Safari and Firefox — so the SVG is rasterised to
-   * PNG on an offscreen canvas first. This writes the displayed artwork, not the
-   * generated component code and not the SVG data URI as text.
    */
   async function handleCopyImage() {
     if (!cleanSvgMarkup) return;
@@ -192,14 +230,9 @@ export function SvgToCodeUI() {
 
       await navigator.clipboard.write([
         new ClipboardItem({
-          // Safari only honours the write when the Blob is produced inside this
-          // promise, which keeps the user-activation token alive across the
-          // async rasterisation. Chromium/Firefox accept the same form.
           "image/png": (async () => {
             const img = await loadSvgImage(cleanSvgMarkup);
             const canvas = document.createElement("canvas");
-            // Source dimensions keep the original aspect ratio; the 24 fallback
-            // mirrors the one already used by the preview badge.
             canvas.width = dims.width || 24;
             canvas.height = dims.height || 24;
             const ctx = canvas.getContext("2d");
@@ -211,9 +244,44 @@ export function SvgToCodeUI() {
         }),
       ]);
 
+      setCopiedImage(true);
+      setTimeout(() => setCopiedImage(false), 2000);
+      showToast("success", t("toastImageCopied"));
+    } catch {
+      showToast("error", t("copyFailed"));
+    }
+  }
+
+  async function handleCopyComponentCode() {
+    if (!generatedCode) return;
+    try {
+      await navigator.clipboard.writeText(generatedCode);
       setCopiedCode(true);
       setTimeout(() => setCopiedCode(false), 2000);
-      showToast("success", tDownload("copied"));
+      showToast("success", t("codeCopied"));
+      try {
+        const updated = await trackConversionUsage({
+          inputFormat: "svg",
+          outputFormat: activeTab,
+          success: true,
+        });
+        if (updated) setUsage(updated);
+      } catch {}
+    } catch {
+      showToast("error", t("copyFailed"));
+    }
+  }
+
+  async function handleCopySvgCode() {
+    if (!svgInput.trim()) {
+      showToast("error", t("toastNoSvgToCopy"));
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(svgInput);
+      setCopiedSvgCode(true);
+      setTimeout(() => setCopiedSvgCode(false), 2000);
+      showToast("success", t("toastSvgCopied"));
     } catch {
       showToast("error", t("copyFailed"));
     }
@@ -225,14 +293,14 @@ export function SvgToCodeUI() {
       const dataUri = svgToDataUrl(svgInput);
       await navigator.clipboard.writeText(dataUri);
       setCopiedDataUri(true);
-      showToast("success", "Data URI copied!");
+      showToast("success", t("dataUriCopied"));
       setTimeout(() => setCopiedDataUri(false), 2000);
     } catch {
       showToast("error", t("copyFailed"));
     }
   }
 
-  function handleDownload() {
+  async function handleDownload() {
     if (!generatedCode) return;
     const currentTabObj = FRAMEWORK_TABS.find((tab) => tab.id === activeTab);
     const ext = currentTabObj?.ext || "tsx";
@@ -252,11 +320,19 @@ export function SvgToCodeUI() {
       framework: activeTab,
       component_name: componentName,
     });
+    try {
+      const updated = await trackConversionUsage({
+        inputFormat: "svg",
+        outputFormat: activeTab,
+        success: true,
+      });
+      if (updated) setUsage(updated);
+    } catch {}
   }
 
   function handleClearSvg() {
-    setSvgInput(SAMPLE_SVGS.rocket.svg);
-    setComponentName(SAMPLE_SVGS.rocket.name);
+    setSvgInput("");
+    setComponentName("");
   }
 
   return (
@@ -323,19 +399,31 @@ export function SvgToCodeUI() {
                   className="w-full min-w-0 h-full p-3 md:p-4 resize-none outline-none border-none bg-transparent font-mono text-[13px] leading-[1.6] text-black placeholder:text-[#94A3B8] whitespace-pre-wrap break-all overflow-auto overscroll-contain brand-scrollbar"
                 />
                 <div className="absolute bottom-0 left-0 right-[16px] h-[13px] md:h-[21px] bg-[#FFFFFF] pointer-events-none rounded-bl-[16px]" />
-                <button
-                  type="button"
-                  onClick={handleCopyDataUri}
-                  disabled={!svgInput}
-                  aria-label="Copy Data URI"
-                  title="Copy Data URI"
-                  className="absolute top-2 right-2 md:top-3 md:right-3 bg-white border border-[#E2E8F0] hover:border-brand-primary text-[#475569] hover:text-brand-primary rounded-[6px] p-1 md:p-1.5 flex items-center justify-center z-30 disabled:opacity-50 disabled:cursor-not-allowed shadow-xs cursor-pointer transition-colors"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                  </svg>
-                </button>
+                <div className="absolute top-2 right-2 md:top-3 md:right-3 flex items-center gap-1.5 z-30">
+                  <button
+                    type="button"
+                    onClick={handleCopySvgCode}
+                    disabled={!svgInput.trim()}
+                    aria-label={copiedSvgCode ? "SVG code copied" : "Copy SVG code"}
+                    title={copiedSvgCode ? "Copied!" : "Copy SVG code"}
+                    className="bg-white border border-[#E2E8F0] hover:border-brand-primary text-[#475569] hover:text-brand-primary rounded-[6px] p-1 md:p-1.5 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-xs cursor-pointer transition-colors"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCopyDataUri}
+                    disabled={!svgInput}
+                    aria-label="Copy Data URI"
+                    title="Copy Data URI"
+                    className="bg-white border border-[#E2E8F0] hover:border-brand-primary text-[#475569] hover:text-brand-primary rounded-[6px] px-2 py-1 text-xs font-medium hidden sm:flex items-center gap-1 shadow-xs cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Data URI
+                  </button>
+                </div>
               </div>
 
               <input
@@ -429,7 +517,7 @@ export function SvgToCodeUI() {
                     dangerouslySetInnerHTML={{ __html: cleanSvgMarkup }}
                   />
                 ) : (
-                  <div className="text-text-muted text-[14px] text-center">No preview available</div>
+                  <div className="text-text-muted text-[14px] text-center">{t("noPreviewAvailable")}</div>
                 )}
               </div>
 
@@ -438,7 +526,7 @@ export function SvgToCodeUI() {
                 <div className="w-full min-w-0 max-w-full p-[14px] md:p-[16px] bg-white rounded-[14px] border border-[#8F8F8F] flex flex-col gap-[12px]">
                   
                   {/* Framework Pill Tabs */}
-                  <div role="group" aria-label="Conversion formats" className="flex w-full min-w-0 max-w-full items-center gap-[6px] overflow-x-auto overflow-y-hidden overscroll-x-contain pb-[2px] brand-scrollbar">
+                  <div role="group" aria-label="Conversion formats" className="flex w-full min-w-0 max-w-full items-center gap-[6px] overflow-x-auto overflow-y-hidden overscroll-x-contain pb-[2px] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     {FRAMEWORK_TABS.map((tab) => (
                       <button
                         key={tab.id}
@@ -456,7 +544,7 @@ export function SvgToCodeUI() {
                   </div>
 
                   {/* Component Options Row */}
-                  <div className="flex min-w-0 max-w-full flex-col sm:flex-row items-start sm:items-center justify-between gap-[10px] pt-[8px] border-t border-[#E8DED7] flex-wrap">
+                  <div className="flex min-w-0 max-w-full flex-col sm:flex-row items-start sm:items-center justify-between gap-[10px] pt-[8px] border-t border-[#E8DED7] flex-wrap min-h-[44px]">
                     <div className="flex items-center gap-[8px] w-full sm:w-auto">
                       <label className="font-heading font-semibold text-[13px] text-text-dark shrink-0">
                         {t("componentNameLabel")}:
@@ -532,7 +620,7 @@ export function SvgToCodeUI() {
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                       </svg>
-                      {copiedCode ? t("copied") : tDownload("copyImage")}
+                      {copiedImage ? t("copied") : tDownload("copyImage")}
                     </button>
                   </div>
                 </div>

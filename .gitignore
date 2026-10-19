@@ -54,5 +54,8 @@ public/debug.json
 # OpenCode
 .opencode/
 .env
+env
+Crush-SVG/
+test-results/
 .claude/
 .vscode/

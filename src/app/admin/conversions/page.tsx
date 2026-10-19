@@ -136,20 +136,30 @@ export default function ConversionsPage() {
     requestSequence.current.invalidate();
     setPage(targetPage);
     loadConversions(targetPage);
+    const mainEl = document.querySelector('main');
+    if (mainEl) {
+      mainEl.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const handleStartDateChange = (value: string) => {
-    if (value && endDate && value > endDate) return;
     if (value !== startDate) requestSequence.current.invalidate();
     setStartDate(value);
+    if (value && endDate && value > endDate) {
+      setEndDate(value);
+    }
     setActiveDatePreset("custom");
     setPage(1);
   };
 
   const handleEndDateChange = (value: string) => {
-    if (value && startDate && value < startDate) return;
     if (value !== endDate) requestSequence.current.invalidate();
     setEndDate(value);
+    if (value && startDate && value < startDate) {
+      setStartDate(value);
+    }
     setActiveDatePreset("custom");
     setPage(1);
   };
@@ -371,9 +381,14 @@ export default function ConversionsPage() {
                             <span className="font-body font-semibold text-xs text-[#059669]">Success</span>
                           </div>
                         ) : (
-                          <div className="inline-flex items-center gap-1.5 bg-red-50 px-2.5 py-1 rounded-full border border-red-200">
-                            <SvgError className="w-3.5 h-3.5 text-red-600" />
-                            <span className="font-body font-semibold text-xs text-red-600">Failed</span>
+                          <div 
+                            className="inline-flex items-center gap-1.5 bg-red-50 px-2.5 py-1 rounded-full border border-red-200"
+                            title={conv.errorReason || "Conversion failed"}
+                          >
+                            <SvgError className="w-3.5 h-3.5 text-red-600 shrink-0" />
+                            <span className="font-body font-semibold text-xs text-red-600 truncate max-w-[120px]">
+                              {conv.errorReason ? `Failed (${conv.errorReason})` : "Failed"}
+                            </span>
                           </div>
                         )}
                       </td>

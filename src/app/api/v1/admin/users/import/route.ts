@@ -32,7 +32,7 @@ interface ParsedUserRow {
  * RFC 4180 compliant CSV parser that supports quotes, escaped quotes,
  * CRLF/LF newlines, and strips leading UTF-8 BOM.
  */
-function parseCsv(text: string): string[][] {
+function parseCsv(text: string): { rows: string[][]; error?: string } {
   let cleanText = text
   if (cleanText.charCodeAt(0) === 0xfeff) {
     cleanText = cleanText.slice(1)
@@ -87,6 +87,10 @@ function parseCsv(text: string): string[][] {
     }
   }
 
+  if (inQuotes) {
+    return { rows: [], error: 'Malformed CSV: unclosed quote detected' }
+  }
+
   if (currentCell !== '' || currentRow.length > 0) {
     currentRow.push(currentCell.trim())
     if (currentRow.some((c) => c !== '')) {
@@ -94,7 +98,7 @@ function parseCsv(text: string): string[][] {
     }
   }
 
-  return rows
+  return { rows }
 }
 
 /**
@@ -153,7 +157,10 @@ export async function POST(request: NextRequest) {
     return errorResponse(400, 'empty_csv', 'The uploaded CSV file is empty', undefined, request)
   }
 
-  const parsedRows = parseCsv(fileText)
+  const { rows: parsedRows, error: parseError } = parseCsv(fileText)
+  if (parseError) {
+    return errorResponse(400, 'malformed_csv', parseError, undefined, request)
+  }
   if (parsedRows.length === 0) {
     return errorResponse(400, 'empty_csv', 'The uploaded CSV file contains no readable content', undefined, request)
   }

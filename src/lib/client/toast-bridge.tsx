@@ -58,10 +58,10 @@ export function showToast(kind: ToastKind, message: string, opts?: { id?: string
     toast.dismiss(activeToastId)
   }
 
-  const options =
-    opts?.id !== undefined || opts?.duration !== undefined
-      ? { id: opts?.id, duration: opts?.duration }
-      : undefined
+  const options = {
+    ...(opts?.id ? { id: opts.id } : {}),
+    duration: opts?.duration ?? (kind === "error" ? 5000 : kind === "success" ? 3500 : 4000),
+  }
 
   const id =
     kind === "success"

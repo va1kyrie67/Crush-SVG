@@ -182,7 +182,7 @@ export function Header({ logoUrl }: { logoUrl?: string }) {
   const isAuthenticated = status === "authed" && !!user;
 
   return (
-    <header className="w-full sticky top-0 z-50">
+    <header className="w-full min-w-0 max-w-full sticky top-0 z-50">
       <div
         className={`w-full transition-all duration-300 ${
           isScrolled
@@ -205,6 +205,7 @@ export function Header({ logoUrl }: { logoUrl?: string }) {
               alt="CrushSVG Logo"
               width={30}
               height={30}
+              unoptimized
               className="w-[24px] h-[24px] md:w-[30px] md:h-[30px] object-contain transition-transform duration-200 group-hover:scale-105"
             />
 
@@ -527,7 +528,7 @@ export function Header({ logoUrl }: { logoUrl?: string }) {
                 href="/login"
                 onClick={() => saveAuthRedirectUrl()}
                 variant="outline"
-                className="w-[80px] h-[34px] rounded-[10px] text-[14px] md:w-[110px] md:h-[40px] md:rounded-[12px] md:text-[15px] min-[1024px]:w-[68px] min-[1024px]:h-[32px] min-[1024px]:rounded-[9px] min-[1024px]:text-[12px] min-[1280px]:w-[110px] min-[1280px]:h-[40px] min-[1280px]:rounded-[12px] min-[1280px]:text-[15px] bg-[#FFFFFF] px-[0px]"
+                className="min-w-[76px] h-[34px] rounded-[10px] text-[14px] md:min-w-[100px] md:h-[40px] md:rounded-[12px] md:text-[15px] min-[1024px]:min-w-[76px] min-[1024px]:h-[34px] min-[1024px]:rounded-[9px] min-[1024px]:text-[13px] min-[1280px]:min-w-[110px] min-[1280px]:h-[40px] min-[1280px]:rounded-[12px] min-[1280px]:text-[15px] px-3.5"
               >
                 {tAuth("login")}
               </Button>
@@ -535,15 +536,15 @@ export function Header({ logoUrl }: { logoUrl?: string }) {
               <Button
                 href="/signup"
                 variant="solid"
-                className="w-[84px] h-[34px] rounded-[10px] text-[14px] md:w-[115px] md:h-[40px] md:rounded-[12px] md:text-[15px] min-[1024px]:w-[72px] min-[1024px]:h-[32px] min-[1024px]:rounded-[9px] min-[1024px]:text-[12px] min-[1280px]:w-[115px] min-[1280px]:h-[40px] min-[1280px]:rounded-[12px] min-[1280px]:text-[15px] px-[0px]"
+                className="min-w-[80px] h-[34px] rounded-[10px] text-[14px] md:min-w-[100px] md:h-[40px] md:rounded-[12px] md:text-[15px] min-[1024px]:min-w-[80px] min-[1024px]:h-[34px] min-[1024px]:rounded-[9px] min-[1024px]:text-[13px] min-[1280px]:min-w-[110px] min-[1280px]:h-[40px] min-[1280px]:rounded-[12px] min-[1280px]:text-[15px] px-3.5"
               >
                 {tAuth("signup")}
               </Button>
             </div>
 
             {/* Authenticated profile menu */}
-            <div className={`logged-in-only relative hidden min-[1024px]:block ${status === "guest" ? "!hidden" : ""}`}>
-              {(isAuthenticated || user) && (
+            <div className={`logged-in-only relative hidden min-[1024px]:block ${status === "guest" && !user ? "!hidden" : ""}`}>
+              {(isAuthenticated || !!user) && (
                 <>
               <button
                 type="button"

@@ -74,7 +74,7 @@ export default async function SvgGuideArticlePage({ params }: SvgGuidePageProps)
   ]);
 
   return (
-    <main className="w-full min-h-[60vh] bg-background px-4 pb-16">
+    <main className="w-full min-w-0 max-w-full overflow-x-hidden min-h-[60vh] bg-background px-4 pb-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema).replace(/</g, "\\u003c") }}
@@ -84,7 +84,7 @@ export default async function SvgGuideArticlePage({ params }: SvgGuidePageProps)
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema).replace(/</g, "\\u003c") }}
       />
 
-      <div className="mx-auto flex w-full max-w-[900px] flex-col items-center">
+      <div className="mx-auto flex w-full min-w-0 max-w-full max-w-[900px] flex-col items-center">
         <nav aria-label="Breadcrumb" className="w-full pt-6 text-sm text-text-muted">
           <ol className="flex flex-wrap items-center gap-2">
             <li><Link href="/" className="hover:text-brand-primary hover:underline">Home</Link></li>
@@ -95,7 +95,7 @@ export default async function SvgGuideArticlePage({ params }: SvgGuidePageProps)
           </ol>
         </nav>
 
-        <article className="mt-8 w-full rounded-[16px] border border-[#F2EDE8] bg-white p-6 shadow-[6px_1px_50px_0px_rgba(0,0,0,0.04)] md:p-12">
+        <article className="mt-8 w-full min-w-0 max-w-full overflow-hidden break-words [overflow-wrap:anywhere] rounded-[16px] border border-[#F2EDE8] bg-white p-6 shadow-[6px_1px_50px_0px_rgba(0,0,0,0.04)] md:p-12">
           <p className="mb-3 font-afacad text-sm font-semibold uppercase tracking-wide text-brand-primary">
             {t("badge")}
           </p>

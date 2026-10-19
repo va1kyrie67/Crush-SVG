@@ -51,9 +51,22 @@ export default async function ChangelogPage({
 
   const releases = [
     {
+      version: "v1.3.0",
+      date: "October 2026",
+      tag: t("latestBadge"),
+      title: "AI Background Remover, Image Resizer & SVG Optimizer Suite",
+      description: "Massive suite expansion introducing local AI neural background removal, smart image dimension resizing, and aggressive SVG minification.",
+      changes: [
+        { type: "New Tool", text: "AI Background Remover with transparent, solid white/black, and custom hex color canvas modes." },
+        { type: "New Tool", text: "Image Resizer with lock aspect ratio, quality presets, and custom dimension cropping." },
+        { type: "New Tool", text: "SVG Optimizer with precision coordinate trimming, metadata stripping, and live preview savings counter." },
+        { type: "Engine", text: "Direct Sharp vector rendering pipeline delivering instant <50ms transparent SVG to PNG rasterization." },
+      ],
+    },
+    {
       version: "v1.2.0",
       date: "August 2026",
-      tag: t("latestBadge"),
+      tag: "Feature",
       title: "Enhanced Structured Data & PWA Offline Engine",
       description: "Comprehensive SEO architecture enhancement, full Google Knowledge Graph support, and PWA service worker caching.",
       changes: [

@@ -40,7 +40,7 @@ export default async function HelpPage({
       {/* Header Section */}
       <Hero
         badge={t("badge")}
-        title={<>{t("title").split(" ")[0]} <span className="bg-gradient-to-r from-brand-primary to-brand-secondary text-transparent bg-clip-text">{t("title").split(" ").slice(1).join(" ") || "FAQ"}</span></>}
+        title={<>{t("title").split(" ")[0]} <span className="text-brand-primary">{t("title").split(" ").slice(1).join(" ") || "FAQ"}</span></>}
         subtitle={<>{t("subtitle")} <Link href="/svg-guides" className="text-brand-primary hover:underline font-medium">technical guides</Link>, or contact <Link href="/team" className="text-brand-primary hover:underline font-medium">our team</Link> directly.</>}
         className="mb-[24px] md:mb-[40px]"
       />
@@ -96,7 +96,7 @@ export default async function HelpPage({
       </div>
 
       {/* Contact Section */}
-      <div className="w-full max-w-[890px] mt-[20px] mb-[40px] flex flex-col items-center bg-white rounded-[16px] p-[32px] md:p-[48px] border border-[#F2EDE8]"
+      <div className="w-full max-w-[890px] my-12 md:my-16 flex flex-col items-center bg-white rounded-[16px] p-[32px] md:p-[48px] border border-[#F2EDE8]"
         style={{ boxShadow: "6px 1px 50px 0px rgba(0, 0, 0, 0.04)" }}
       >
         <h2 className="font-heading font-semibold text-[24px] md:text-[32px] text-text-dark mb-[12px]">

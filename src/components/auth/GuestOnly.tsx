@@ -19,11 +19,7 @@ export function GuestOnly({ children }: GuestOnlyProps) {
   const initiallyAuthedRef = useRef(status === "authed");
 
   useEffect(() => {
-    // Only redirect if the user was ALREADY authed when this component
-    // first mounted (e.g. direct navigation to /login while logged in).
-    // If the user logs in *while* on this page, AuthCard handles the
-    // navigation — we must not compete with a second router.push.
-    if (initiallyAuthedRef.current && status === "authed" && !redirectedRef.current) {
+    if (status === "authed" && !redirectedRef.current) {
       redirectedRef.current = true;
       setRedirecting(true);
       const returnTo = getAuthRedirectUrl(searchParams.get("returnTo"));
@@ -32,9 +28,8 @@ export function GuestOnly({ children }: GuestOnlyProps) {
     }
   }, [status, searchParams]);
 
-  // If user navigated directly while already authed, or is redirecting after login,
-  // show a stable loader with full min-height so header and footer never collapse.
-  if (initiallyAuthedRef.current || redirecting) {
+  // While checking auth status or redirecting, show a stable loader so auth forms never flash.
+  if (status === "loading" || status === "authed" || redirecting) {
     return (
       <div className="w-full min-h-[75vh] flex items-center justify-center py-[60px]">
         <AppLoader />

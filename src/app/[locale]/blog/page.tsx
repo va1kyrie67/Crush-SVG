@@ -10,7 +10,7 @@ import { BlogListing } from "@/components/blog/BlogListing";
 import { AdBanner } from "@/components/ui/AdBanner";
 import { BLOG_SAMPLE_DATA_ENABLED, SAMPLE_BLOG_POSTS } from "@/lib/blog-sample-data";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -75,7 +75,7 @@ interface BlogPost {
 
 // TEST DATA: appends sample posts when BLOG_SAMPLE_DATA=true. Remove with blog-sample-data.ts.
 function withSampleData(posts: BlogPost[], categorySet: Set<string>) {
-  if (BLOG_SAMPLE_DATA_ENABLED) {
+  if (posts.length === 0 || BLOG_SAMPLE_DATA_ENABLED) {
     for (const p of SAMPLE_BLOG_POSTS) {
       posts = [...posts, p];
       categorySet.add(p.category);
@@ -90,7 +90,6 @@ async function getAllPosts(): Promise<{ posts: BlogPost[]; categories: string[] 
     const docs = await Blog.find({ published: true })
       .sort({ createdAt: -1 })
       .populate("authorId", "displayName")
-      .select("-content")
       .lean();
 
     const categorySet = new Set<string>();

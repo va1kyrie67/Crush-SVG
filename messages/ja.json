@@ -713,6 +713,7 @@
   "cookies_page": {
     "metaTitle": "Cookieポリシー | CrushSVG",
     "metaDesc": "CrushSVGにおけるCookieおよび類似技術の利用目的と設定方法についての説明です。",
+    "badge": "Cookieポリシー",
     "title": "Cookieポリシー",
     "subtitle": "最終更新日: 2026年8月 • 運営: The Nevon"
   },
@@ -774,7 +775,7 @@
   "blog_page": {
     "metaTitle": "CrushSVG公式ブログ：メール配信・ベクター変換ナレッジ",
     "metaDesc": "SVGからPNGへの高画質変換、OutlookやGmailでの画像表示崩れ対策、ベクター最適化の技術情報を発信しています。",
-    "badge": "CrushSVG ブログ＆技術ガイド",
+    "badge": "CrushSVG ブログ",
     "heroTitlePrefix": "ベクターからメール受信箱まで、",
     "heroTitleHighlight": "実践のノウハウとヒント",
     "heroSubtitle": "SVGの最適化、高精細PNG変換、OutlookやGmailで崩れない確実な画像表示手法を解説する実践的ブログです。",
@@ -964,6 +965,7 @@
     "howToFaviconGeneratorDesc": "3つの簡単なステップで、Webプロジェクト用の高解像度ファビコンやマニフェストを作成できます。"
   },
   "toasts": {
+    "fileLoaded": "SVGが正常に読み込まれました",
     "conversionComplete": "変換が完了しました。{format}のダウンロード準備ができました。",
     "conversionFailed": "変換に失敗しました。もう一度お試しください。",
     "rateLimited": "操作が早すぎます。{seconds, plural, one {#秒} other {#秒}}お待ちください。",
@@ -995,7 +997,12 @@
     "accountCreatedSuccess": "アカウントが作成されました。メールを確認して認証を完了してください。",
     "somethingWentWrong": "問題が発生しました。もう一度お試しください。",
     "resendLinkSuccess": "認証メールを再送しました。",
-    "couldNotResend": "認証メールを再送できませんでした。"
+    "couldNotResend": "認証メールを再送できませんでした。",
+    "clipboardEmpty": "クリップボードが空です",
+    "pressCtrlV": "Ctrl+V を押して貼り付けてください",
+    "sanitizedSvg": "セキュリティのため、安全でないインラインスクリプトやイベントハンドラーが削除されました。",
+    "largeSvgClientOnly": "サイズの大きいSVGがブラウザ内で変換されました。このサイズでは背景の削除は利用できません。",
+    "imageCopied": "画像がクリップボードにコピーされました！"
   },
   "bg_remover": {
     "downloadButton": "PNGをダウンロード",
@@ -1119,7 +1126,11 @@
       "errorNoImage": "画像が選択されていません。画像をアップロードしてください。",
       "successRemoved": "背景を削除しました。画像をダウンロードできます。",
       "successDownload": "ダウンロードを開始しました"
-    }
+    },
+    "presetColors": "プリセットカラー",
+    "dimensions": "寸法",
+    "aspect": "縦横比",
+    "scale": "倍率"
   },
   "image_resizer": {
     "aspectLabel": "縦横比",
@@ -1197,7 +1208,13 @@
     "uploadImageAlt": "画像をアップロード",
     "uploadLabel": "画像をここにドロップするかクリックして選択",
     "widthLabel": "幅",
-    "widthPlaceholder": "幅 (px)"
+    "widthPlaceholder": "幅 (px)",
+    "toastCleared": "画像と設定をクリアしました",
+    "toastNoImage": "画像が選択されていません。画像をアップロードして開始してください。",
+    "toastResizeComplete": "画像のリサイズが完了しました！ダウンロード可能です。",
+    "toastDownloadStarted": "ダウンロードを開始しました",
+    "toastPasted": "クリップボードから画像を貼り付けました",
+    "toastImageLoaded": "画像が正常に読み込まれました"
   },
   "raster_to_svg": {
     "advancedOptions": "詳細オプション",
@@ -1284,7 +1301,8 @@
     "uploadLabel": "画像をここにドロップするかクリックして選択",
     "vectorOutput": "ベクター出力",
     "vectorSvgTab": "ベクターSVG",
-    "vectorizing": "画像のパスをベクター化中..."
+    "vectorizing": "画像のパスをベクター化中...",
+    "toastImageLoaded": "PNG画像が正常に読み込まれました"
   },
   "alert": {
     "defaultError": "エラーが発生しました",
@@ -1399,7 +1417,14 @@
     "webpDownloadedSuccess": "WebP画像をエクスポートしました！",
     "webpFailed": "WebP画像の生成に失敗しました。",
     "snippetCopied": "HTML head コードをクリップボードにコピーしました！",
-    "copyFailed": "クリップボードへのコピーに失敗しました。"
+    "copyFailed": "クリップボードへのコピーに失敗しました。",
+    "noFaviconGenerated": "ファビコンが生成されていません",
+    "noFaviconHint": "SVGをアップロードするかコードを貼り付けると、ブラウザ、iOS、Androidのプレビューが表示されます。",
+    "backgroundColor": "背景色",
+    "colorTransparent": "透明",
+    "colorWhite": "白",
+    "colorDark": "ダーク",
+    "colorCustom": "カスタム"
   },
   "profile_dashboard": {
     "nameRequired": "表示名を入力してください。",
@@ -1460,7 +1485,12 @@
     "fileReadError": "SVGファイルの読み込みに失敗しました。",
     "codeCopied": "コンポーネントコードをクリップボードにコピーしました！",
     "copyFailed": "コピーに失敗しました。",
-    "fileDownloaded": "コンポーネントファイルをダウンロードしました。"
+    "fileDownloaded": "コンポーネントファイルをダウンロードしました。",
+    "toastSanitized": "セキュリティのため、安全でないインラインスクリプトとイベントハンドラーがSVGから削除されました。",
+    "toastImageCopied": "画像がクリップボードにコピーされました！",
+    "toastNoSvgToCopy": "コピーするSVGコードがありません",
+    "toastSvgCopied": "SVGコードがクリップボードにコピーされました！",
+    "noPreviewAvailable": "プレビューはありません"
   },
   "use_case": {
     "badge": "ユースケース",

@@ -40,6 +40,7 @@ export default async function CookiesPage({
         
         {/* Hero Section */}
         <Hero
+          badge={t("badge")}
           title={<>{t("title").split(" ")[0]} <span className="bg-gradient-to-r from-brand-primary to-brand-secondary text-transparent bg-clip-text">{t("title").split(" ").slice(1).join(" ") || "Policy"}</span></>}
           subtitle={<>{t("subtitle")} • <Link href="/about" className="text-brand-primary hover:underline font-medium">The Nevon</Link></>}
           className="mb-[16px] md:mb-[40px]"

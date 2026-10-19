@@ -6,6 +6,7 @@ import { ImageResizer } from "@/components/sections/ImageResizer";
 import { Features } from "@/components/sections/Features";
 import { SignUpCTA } from "@/components/sections/SignUpCTA";
 import { StepsSection } from "@/components/sections/StepsSection";
+import { TargetAudience } from "@/components/sections/TargetAudience";
 import { FAQ } from "@/components/sections/FAQ";
 import { AdBanner } from "@/components/ui/AdBanner";
 import { routing } from "@/i18n/routing";
@@ -41,7 +42,7 @@ export default async function ImageResizerPage({
   const tTools = await getTranslations({ locale, namespace: "tool_pages.imageResizer" });
 
   return (
-    <div className="w-full min-w-0 max-w-full flex flex-col items-center">
+    <div className="w-full min-w-0 max-w-full overflow-x-hidden flex flex-col items-center">
       <Hero
         title={tTools("h1")}
         subtitle={tTools("subtitle")}
@@ -50,6 +51,7 @@ export default async function ImageResizerPage({
       <Features mode="image-resizer" />
       <SignUpCTA />
       <StepsSection mode="image-resizer" />
+      <TargetAudience mode="image-resizer" />
       <AdBanner />
       <FAQ mode="image-resizer" />
     </div>

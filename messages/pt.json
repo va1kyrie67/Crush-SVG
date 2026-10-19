@@ -713,6 +713,7 @@
   "cookies_page": {
     "metaTitle": "Política de Cookies | CrushSVG",
     "metaDesc": "Política de cookies do CrushSVG, explicando o uso de cookies e tecnologias similares.",
+    "badge": "Política de Cookies",
     "title": "Política de Cookies",
     "subtitle": "Última atualização: agosto de 2026 • Parte do CrushSVG por The Nevon"
   },
@@ -774,7 +775,7 @@
   "blog_page": {
     "metaTitle": "Blog CrushSVG: E-mail Marketing e Guias de Conversão",
     "metaDesc": "Tutoriais e listas de verificação sobre conversão de SVG para PNG, correção de imagens no Outlook e Gmail e otimização de vetores.",
-    "badge": "Blog & Guias CrushSVG",
+    "badge": "CrushSVG Blog",
     "heroTitlePrefix": "Do Vetor para a Caixa de Entrada,",
     "heroTitleHighlight": "Dicas & Boas Práticas",
     "heroSubtitle": "Guias práticos e aprofundados sobre otimização de SVG, conversão para PNG em alta resolução e renderização perfeita em clientes de e-mail.",
@@ -964,6 +965,7 @@
     "howToFaviconGeneratorDesc": "Siga três passos simples para criar favicons, ícones de toque e manifestos de alta resolução."
   },
   "toasts": {
+    "fileLoaded": "SVG carregado com sucesso",
     "conversionComplete": "Conversão concluída. O seu {format} está pronto para baixar.",
     "conversionFailed": "Falha na conversão. Tente novamente.",
     "rateLimited": "Está a executar ações demasiado rápido. Aguarde {seconds, plural, one {# segundo} other {# segundos}}.",
@@ -995,7 +997,12 @@
     "accountCreatedSuccess": "Conta criada! Verifique seu e-mail para confirmar sua conta.",
     "somethingWentWrong": "Algo deu errado. Por favor, tente novamente.",
     "resendLinkSuccess": "E-mail de verificação reenviado com sucesso.",
-    "couldNotResend": "Não foi possível reenviar o e-mail de verificação."
+    "couldNotResend": "Não foi possível reenviar o e-mail de verificação.",
+    "clipboardEmpty": "A área de transferência está vazia",
+    "pressCtrlV": "Pressione Ctrl+V para colar",
+    "sanitizedSvg": "Scripts embutidos ou manipuladores de eventos inseguros foram removidos por segurança.",
+    "largeSvgClientOnly": "SVG grande convertido no seu navegador. A remoção de fundo não está disponível para arquivos deste tamanho.",
+    "imageCopied": "Imagem copiada para a área de transferência!"
   },
   "bg_remover": {
     "downloadButton": "Baixar PNG",
@@ -1119,7 +1126,11 @@
       "errorNoImage": "Nenhuma imagem selecionada. Envie uma para começar.",
       "successRemoved": "Fundo removido! Sua imagem está pronta para baixar.",
       "successDownload": "O download foi iniciado"
-    }
+    },
+    "presetColors": "Cores Predefinidas",
+    "dimensions": "Dimensões",
+    "aspect": "Proporção",
+    "scale": "Escala"
   },
   "image_resizer": {
     "aspectLabel": "Proporção",
@@ -1197,7 +1208,13 @@
     "uploadImageAlt": "Enviar Imagem",
     "uploadLabel": "Solte a sua imagem aqui ou clique para procurar",
     "widthLabel": "Largura",
-    "widthPlaceholder": "Largura (px)"
+    "widthPlaceholder": "Largura (px)",
+    "toastCleared": "Imagem e configurações limpas",
+    "toastNoImage": "Nenhuma imagem selecionada. Envie uma imagem para começar.",
+    "toastResizeComplete": "Imagem redimensionada! Pronta para download.",
+    "toastDownloadStarted": "Seu download começou",
+    "toastPasted": "Imagem colada da área de transferência",
+    "toastImageLoaded": "Imagem carregada com sucesso"
   },
   "raster_to_svg": {
     "advancedOptions": "Opções Avançadas",
@@ -1284,7 +1301,8 @@
     "uploadLabel": "Solte a sua imagem aqui ou clique para procurar",
     "vectorOutput": "Saída Vetorial",
     "vectorSvgTab": "SVG Vetorial",
-    "vectorizing": "A vetorizar os caminhos da imagem..."
+    "vectorizing": "A vetorizar os caminhos da imagem...",
+    "toastImageLoaded": "Imagem PNG carregada com sucesso"
   },
   "alert": {
     "defaultError": "Algo correu mal",
@@ -1399,7 +1417,14 @@
     "webpDownloadedSuccess": "Imagem WebP exportada com sucesso!",
     "webpFailed": "Falha ao gerar imagem WebP.",
     "snippetCopied": "Snippet HTML head copiado para a área de transferência!",
-    "copyFailed": "Falha ao copiar para a área de transferência."
+    "copyFailed": "Falha ao copiar para a área de transferência.",
+    "noFaviconGenerated": "Nenhum favicon gerado",
+    "noFaviconHint": "Envie um SVG ou cole o código para ver pré-visualizações em tempo real do navegador, iOS e Android.",
+    "backgroundColor": "Cor de Fundo",
+    "colorTransparent": "Transparente",
+    "colorWhite": "Branco",
+    "colorDark": "Escuro",
+    "colorCustom": "Personalizado"
   },
   "profile_dashboard": {
     "nameRequired": "Digite seu nome de exibição.",
@@ -1460,7 +1485,12 @@
     "fileReadError": "Não foi possível ler o arquivo SVG.",
     "codeCopied": "Código do componente copiado para a área de transferência!",
     "copyFailed": "Falha ao copiar.",
-    "fileDownloaded": "Arquivo de componente baixado com sucesso."
+    "fileDownloaded": "Arquivo de componente baixado com sucesso.",
+    "toastSanitized": "Scripts e manipuladores de eventos inseguros foram removidos do seu SVG com segurança.",
+    "toastImageCopied": "Imagem copiada para a área de transferência!",
+    "toastNoSvgToCopy": "Nenhum código SVG para copiar",
+    "toastSvgCopied": "Código SVG copiado para a área de transferência!",
+    "noPreviewAvailable": "Nenhuma pré-visualização disponível"
   },
   "use_case": {
     "badge": "Caso de uso",

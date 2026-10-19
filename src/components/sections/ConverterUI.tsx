@@ -237,8 +237,18 @@ function SvgToPngConverter() {
         }
       })
       .catch(() => {});
+
+    const onUsageUpdated = (e: Event) => {
+      const customEvent = e as CustomEvent<UsageInfo>;
+      if (customEvent.detail) {
+        setUsage(customEvent.detail);
+      }
+    };
+    window.addEventListener("crushUsageUpdated", onUsageUpdated);
+
     return () => {
       cancelled = true;
+      window.removeEventListener("crushUsageUpdated", onUsageUpdated);
     };
   }, [status, sessionVersion]);
 
@@ -291,28 +301,28 @@ function SvgToPngConverter() {
       if (pastedText && isValidSvgContent(pastedText)) {
         e.preventDefault();
         handleSvgChange(pastedText);
-        showToast("success", "✨ Instant SVG loaded from clipboard!");
+        showToast("success", tToast("svgPasted"));
       }
     };
 
     window.addEventListener("paste", handleGlobalPaste);
     return () => window.removeEventListener("paste", handleGlobalPaste);
-  }, []);
+  }, [tToast]);
 
   const handlePasteClipboard = async () => {
     try {
       const text = await navigator.clipboard.readText();
       if (text && isValidSvgContent(text)) {
         handleSvgChange(text);
-        showToast("success", "✨ SVG loaded from clipboard!");
+        showToast("success", tToast("svgPasted"));
       } else if (text) {
         handleSvgChange(text);
-        showToast("info", "Pasted code from clipboard");
+        showToast("info", tToast("svgPasted"));
       } else {
-        showToast("error", "Clipboard is empty");
+        showToast("error", tToast("clipboardEmpty"));
       }
     } catch {
-      showToast("error", "Please press Ctrl+V to paste");
+      showToast("error", tToast("pressCtrlV"));
     }
   };
 
@@ -389,6 +399,14 @@ function SvgToPngConverter() {
         clean = clean.replace(/<svg\b/i, '<svg xmlns="http://www.w3.org/2000/svg"');
       }
     }
+    const hasUnsafe = /<script\b|javascript:|on\w+\s*=/i.test(value);
+    if (hasUnsafe && value !== SAMPLE_SVG && value !== DUMMY_CODE) {
+      showToast("info", tToast("sanitizedSvg"));
+      clean = clean
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
+        .replace(/\son\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "")
+        .replace(/javascript:[^"']*/gi, "");
+    }
     setSvgCode(clean);
     setResult(null);
     setError(null);
@@ -415,7 +433,7 @@ function SvgToPngConverter() {
   }
 
   function handleClearSvg() {
-    setSvgCode(SAMPLE_SVG);
+    setSvgCode("");
     setResult(null);
     setError(null);
     setPreviewError(false);
@@ -478,8 +496,10 @@ function SvgToPngConverter() {
     try {
       const text = await file.text();
       handleSvgChange(text.trimEnd());
+      showToast("success", tToast("fileLoaded") || "SVG loaded successfully");
     } catch {
       setError(tToast("fileReadError"));
+      showToast("error", tToast("fileReadError"));
     }
   }
 
@@ -488,7 +508,13 @@ function SvgToPngConverter() {
     setDragOver(false);
     if (converting) return;
     setError(null);
-    void handleFile(e.dataTransfer.files?.[0]);
+    const file = e.dataTransfer.files?.[0];
+    if (!file) {
+      setError(tToast("invalidSvgFile"));
+      showToast("error", tToast("invalidSvgFile"));
+      return;
+    }
+    void handleFile(file);
   }
 
   async function handleConvert() {
@@ -603,7 +629,7 @@ function SvgToPngConverter() {
           remaining: tracked?.remaining ?? undefined,
         };
         if (browserRasterApproximatesBackground(options)) {
-          showToast("info", "Large SVG converted in your browser. Background removal isn't applied at this size.");
+          showToast("info", tToast("largeSvgClientOnly"));
         }
       } else {
         res = await convertText(svgCode, { ...options, signal: controller.signal });
@@ -703,7 +729,7 @@ function SvgToPngConverter() {
       ]);
       setCopiedImage(true);
       setTimeout(() => setCopiedImage(false), 2000);
-      showToast("success", tToast("svgCopied"));
+      showToast("success", tDownload("copied") || "Image copied to clipboard!");
     } catch {
       showToast("error", tToast("copyFailed"));
     }
@@ -799,7 +825,7 @@ function SvgToPngConverter() {
                       disabled={converting}
                       aria-label="Clear SVG editor"
                       className={`group relative rounded-[6px] px-[12px] py-[4px] font-body font-medium text-[12px] md:text-[12px] overflow-hidden transition-opacity duration-300 ${
-                        svgCode !== SAMPLE_SVG
+                        svgCode.trim() !== "" && svgCode !== SAMPLE_SVG
                           ? converting
                             ? "opacity-50 cursor-not-allowed pointer-events-none"
                             : "opacity-100"
@@ -836,9 +862,21 @@ function SvgToPngConverter() {
                 </div>
 
                 {/* SVG Code Box */}
-                <div className="relative w-full h-[200px] md:h-[302px] rounded-[16px] border border-[#8F8F8F] bg-[#FFFFFF] overflow-hidden focus-within:border-brand-primary transition-colors">
+                <div
+                  onDrop={handleDrop}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragOver(true);
+                  }}
+                  className="relative w-full min-w-0 max-w-full h-[200px] md:h-[302px] rounded-[16px] border border-[#8F8F8F] bg-[#FFFFFF] overflow-hidden focus-within:border-brand-primary transition-colors"
+                >
                   <textarea
                     id="svg-code-textarea"
+                    onDrop={handleDrop}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setDragOver(true);
+                    }}
                     value={isLargeSvg ? largeSvgExcerpt : svgCode === SAMPLE_SVG ? "" : svgCode}
                     placeholder={DUMMY_CODE}
                     readOnly={isLargeSvg}
@@ -855,31 +893,14 @@ function SvgToPngConverter() {
                       }
                     }}
                     onChange={(e) => {
-                      const val = e.target.value;
-                      if (val === "") {
-                        handleSvgChange(SAMPLE_SVG);
-                      } else {
-                        handleSvgChange(val);
-                      }
+                      handleSvgChange(e.target.value);
                     }}
                     spellCheck={false}
                     aria-label="SVG code editor"
-                    className="w-full h-full p-3 md:p-4 resize-none outline-none border-none bg-transparent font-body font-normal text-[16px] leading-[18.67px] text-black placeholder:text-[#94A3B8] whitespace-pre-wrap break-all overflow-auto brand-scrollbar"
+                    className="w-full min-w-0 max-w-full h-full p-3 md:p-4 resize-none outline-none border-none bg-transparent font-body font-normal text-[16px] leading-[18.67px] text-black placeholder:text-[#94A3B8] whitespace-pre-wrap break-all [overflow-wrap:anywhere] overflow-auto brand-scrollbar"
                   />
                   <div className="absolute bottom-0 left-0 right-[16px] h-[13px] md:h-[21px] bg-[#FFFFFF] pointer-events-none rounded-bl-[16px]" />
                   <div className="absolute top-2 right-2 md:top-3 md:right-3 flex items-center gap-1.5 z-30">
-                    <button
-                      type="button"
-                      onClick={handlePasteClipboard}
-                      title="Paste from clipboard (Ctrl+V)"
-                      className="bg-white border border-[#E2E8F0] hover:border-brand-primary text-[#475569] hover:text-brand-primary rounded-[6px] px-2 py-1 text-xs font-medium flex items-center gap-1 shadow-xs cursor-pointer transition-colors"
-                    >
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                      </svg>
-                      <span>Paste</span>
-                    </button>
                     <button
                       type="button"
                       onClick={handleCopySvgCode}
@@ -1616,7 +1637,7 @@ function SvgToPngConverter() {
                       <Button
                         className="w-full sm:w-[300px] max-w-[320px] h-[44px] md:h-[48px] px-[12px] md:px-[32px] rounded-[12px] gap-[8px] shadow-sm !opacity-100 disabled:!opacity-100"
                         style={{
-                          background: "linear-gradient(to right, #C94418, #E87822)",
+                          background: "linear-gradient(to right, #D94A1E, #FF9A3D)",
                           opacity: 1,
                         }}
                         onClick={handleConvert}

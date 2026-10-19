@@ -82,7 +82,7 @@ export default async function UseCasePage({ params }: UseCasePageProps) {
   };
 
   return (
-    <div className="w-full min-w-0 max-w-full overflow-x-clip flex flex-col items-center md:pb-[60px] min-h-[60vh]">
+    <div className="w-full min-w-0 max-w-full overflow-x-hidden flex flex-col items-center md:pb-[60px] min-h-[60vh]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(useCaseSchema).replace(/</g, "\\u003c") }}

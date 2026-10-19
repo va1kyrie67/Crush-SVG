@@ -47,7 +47,12 @@ export default function BlogsPage() {
     const [openMenuId, setOpenMenuId] = useState<string | null>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
+    const isFirstSearch = useRef(true);
     useEffect(() => {
+        if (isFirstSearch.current) {
+            isFirstSearch.current = false;
+            return;
+        }
         const timer = setTimeout(() => {
             setSearch(searchInput);
             setPage(1);
@@ -173,7 +178,7 @@ export default function BlogsPage() {
             }
 
             if (!data || data.length === 0) {
-                setError("No blogs to export");
+                showToast("info", "No blogs found to export", { id: "export-blogs" });
                 return;
             }
 
@@ -184,7 +189,7 @@ export default function BlogsPage() {
                 b.slug || "",
                 b.published ? "Yes" : "No",
                 b.authorId?.displayName || b.authorId?.email || "Unknown",
-                new Date(b.createdAt).toLocaleString()
+                new Date(b.createdAt).toISOString()
             ]);
 
             const csvContent = [headers.join(","), ...rows.map((row: any) => row.map((cell: any) => `"${String(cell).replace(/"/g, '""')}"`).join(","))].join("\n");
@@ -200,8 +205,18 @@ export default function BlogsPage() {
             URL.revokeObjectURL(url);
             showToast("success", "Blogs exported successfully!", { id: "export-blogs" });
         } catch (err) {
-            setError("Failed to export blogs");
+            showToast("error", "Failed to export blogs", { id: "export-blogs" });
         }
+    };
+
+    const handleSort = (field: string) => {
+        if (sortBy === field) {
+            setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+        } else {
+            setSortBy(field);
+            setSortOrder('desc');
+        }
+        setPage(1);
     };
 
     const handlePublishedChange = (value: string) => {
@@ -298,7 +313,13 @@ export default function BlogsPage() {
                                         <th scope="col" className="p-5 font-body font-semibold text-sm text-text-muted">Slug</th>
                                         <th scope="col" className="p-5 font-body font-semibold text-sm text-text-muted">Status</th>
                                         <th scope="col" className="p-5 font-body font-semibold text-sm text-text-muted">Author</th>
-                                        <th scope="col" className="p-5 font-body font-semibold text-sm text-text-muted">Created</th>
+                                        <th 
+                                            scope="col" 
+                                            className="p-5 font-body font-semibold text-sm text-text-muted cursor-pointer select-none hover:text-brand-primary transition-colors"
+                                            onClick={() => handleSort('createdAt')}
+                                        >
+                                            Created{sortBy === 'createdAt' ? (sortOrder === 'asc' ? ' ▲' : ' ▼') : ''}
+                                        </th>
                                         <th scope="col" className="p-5 font-body font-semibold text-sm text-text-muted text-right">Actions</th>
                                     </tr>
                                 </thead>
@@ -351,7 +372,7 @@ export default function BlogsPage() {
                                                                 index >= blogs.length - 2 ? "bottom-full mb-1" : "top-full mt-1"
                                                             }`}>
                                                                 <a
-                                                                    href={`/blog/${b.slug}`}
+                                                                    href={`/en/blog/${b.slug}`}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
                                                                     onClick={() => setOpenMenuId(null)}

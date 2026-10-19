@@ -172,10 +172,10 @@ export default function AdminDashboard() {
               
               return (
                 <div key={audit._id?.toString() || index} className="flex items-start space-x-3 text-sm">
-                  <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center
+                  <div className={`w-8 h-8 rounded-full shrink-0 flex items-center justify-center
                     ${isUser ? 'bg-blue-50 text-blue-500' : isSettings ? 'bg-orange-50 text-[#D94A1E]' : 'bg-gray-50 text-gray-500'}
                   `}>
-                    {isUser ? <SvgUserPlus className="w-4 h-4" /> : isSettings ? <SvgSettings className="w-4 h-4" /> : <SvgActivity className="w-4 h-4" />}
+                    {isUser ? <SvgUserPlus className="w-4 h-4 shrink-0" /> : isSettings ? <SvgSettings className="w-4 h-4 shrink-0" /> : <SvgActivity className="w-4 h-4 shrink-0" />}
                   </div>
                   <div>
                     <p className="text-text-dark"><span className="font-bold">{audit.adminId}</span> {audit.action} {audit.resourceType || ''}</p>
@@ -221,8 +221,31 @@ export default function AdminDashboard() {
               <>
               {recentConversions?.map((conv: any) => (
                 <tr key={conv._id?.toString()} className="border-b border-[#F2EDE8] hover:bg-[#FFFCFA] transition-colors">
-                  <td className="p-5 text-text-dark font-medium truncate max-w-[200px]">
-                    {conv.userId?.email || conv.userId || 'Guest'}
+                  <td className="p-5 text-text-dark font-medium max-w-[240px]">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center font-bold text-xs text-brand-primary overflow-hidden border border-[#F2EDE8] shrink-0">
+                        {conv.userId?.photoURL ? (
+                          <img
+                            src={conv.userId.photoURL}
+                            alt="User"
+                            className="w-full h-full object-cover"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          (conv.userId?.displayName?.[0] || conv.userId?.email?.[0] || "G").toUpperCase()
+                        )}
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-body text-sm text-text-dark font-medium truncate">
+                          {conv.userId?.displayName || conv.userId?.email || 'Guest User'}
+                        </span>
+                        {conv.userId?.email && conv.userId?.displayName && (
+                          <span className="font-body text-[12px] text-text-muted truncate">
+                            {conv.userId.email}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </td>
                   <td className="p-5 text-text-muted uppercase font-semibold">{conv.inputFormat}</td>
                   <td className="p-5 text-text-muted uppercase font-semibold">{conv.outputFormat}</td>

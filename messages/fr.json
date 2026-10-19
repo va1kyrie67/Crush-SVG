@@ -713,6 +713,7 @@
   "cookies_page": {
     "metaTitle": "Politique relative aux Cookies | CrushSVG",
     "metaDesc": "Politique des cookies de CrushSVG décrivant l'utilisation des cookies et traceurs.",
+    "badge": "Politique relative aux Cookies",
     "title": "Politique relative aux Cookies",
     "subtitle": "Dernière mise à jour : août 2026 • Fait partie de CrushSVG par The Nevon"
   },
@@ -774,7 +775,7 @@
   "blog_page": {
     "metaTitle": "Blog CrushSVG : Guides Email Marketing & Vectoriel",
     "metaDesc": "Tutoriels concrets et bonnes pratiques sur la conversion SVG en PNG, l'affichage des images dans Outlook et Gmail, et l'optimisation graphique.",
-    "badge": "Blog & Guides CrushSVG",
+    "badge": "CrushSVG Blog",
     "heroTitlePrefix": "Du Vecteur à la Boîte de Réception,",
     "heroTitleHighlight": "Astuces & Bonnes Pratiques",
     "heroSubtitle": "Guides pratiques, listes de contrôle et conseils avancés pour convertir vos SVG en PNG haute résolution et garantir un affichage irréprochable dans Outlook et Gmail.",
@@ -964,6 +965,7 @@
     "howToFaviconGeneratorDesc": "Suivez trois étapes simples pour créer des favicons, icônes tactiles et manifestes haute résolution."
   },
   "toasts": {
+    "fileLoaded": "SVG chargé avec succès",
     "conversionComplete": "Conversion terminée. Votre {format} est prêt à être téléchargé.",
     "conversionFailed": "Échec de la conversion. Veuillez réessayer.",
     "rateLimited": "Vous effectuez des actions trop rapidement. Veuillez patienter {seconds, plural, one {# seconde} other {# secondes}}.",
@@ -995,7 +997,12 @@
     "accountCreatedSuccess": "Compte créé ! Veuillez vérifier vos e-mails pour valider votre compte.",
     "somethingWentWrong": "Une erreur est survenue. Veuillez réessayer.",
     "resendLinkSuccess": "E-mail de vérification renvoyé avec succès.",
-    "couldNotResend": "Impossible de renvoyer l'e-mail de vérification."
+    "couldNotResend": "Impossible de renvoyer l'e-mail de vérification.",
+    "clipboardEmpty": "Le presse-papiers est vide",
+    "pressCtrlV": "Veuillez appuyer sur Ctrl+V pour coller",
+    "sanitizedSvg": "Les scripts en ligne ou gestionnaires d'événements non sécurisés ont été supprimés par sécurité.",
+    "largeSvgClientOnly": "SVG volumineux converti dans votre navigateur. La suppression d'arrière-plan n'est pas disponible pour les fichiers de cette taille.",
+    "imageCopied": "Image copiée dans le presse-papiers !"
   },
   "bg_remover": {
     "downloadButton": "Télécharger le PNG",
@@ -1119,7 +1126,11 @@
       "errorNoImage": "Aucune image sélectionnée. Importez une image pour commencer.",
       "successRemoved": "Arrière-plan supprimé ! Votre image est prête à être téléchargée.",
       "successDownload": "Téléchargement lancé"
-    }
+    },
+    "presetColors": "Couleurs Prédéfinies",
+    "dimensions": "Dimensions",
+    "aspect": "Proportions",
+    "scale": "Échelle"
   },
   "image_resizer": {
     "aspectLabel": "Aspect",
@@ -1197,7 +1208,13 @@
     "uploadImageAlt": "Image d’importation",
     "uploadLabel": "Déposez votre image ici ou cliquez pour parcourir",
     "widthLabel": "Largeur",
-    "widthPlaceholder": "Largeur (px)"
+    "widthPlaceholder": "Largeur (px)",
+    "toastCleared": "Image et paramètres effacés",
+    "toastNoImage": "Aucune image sélectionnée. Téléchargez une image pour commencer.",
+    "toastResizeComplete": "Image redimensionnée ! Prête à être téléchargée.",
+    "toastDownloadStarted": "Votre téléchargement a commencé",
+    "toastPasted": "Image collée depuis le presse-papiers",
+    "toastImageLoaded": "Image chargée avec succès"
   },
   "raster_to_svg": {
     "advancedOptions": "Options Avancées",
@@ -1284,7 +1301,8 @@
     "uploadLabel": "Déposez votre image ici ou cliquez pour parcourir",
     "vectorOutput": "Sortie Vectorielle",
     "vectorSvgTab": "SVG Vectoriel",
-    "vectorizing": "Vectorisation des tracés de l’image..."
+    "vectorizing": "Vectorisation des tracés de l’image...",
+    "toastImageLoaded": "Image PNG chargée avec succès"
   },
   "alert": {
     "defaultError": "Une erreur est survenue",
@@ -1399,7 +1417,14 @@
     "webpDownloadedSuccess": "Image WebP exportée avec succès !",
     "webpFailed": "Échec de génération de l'image WebP.",
     "snippetCopied": "Balises HTML copiées dans le presse-papier !",
-    "copyFailed": "Échec de la copie."
+    "copyFailed": "Échec de la copie.",
+    "noFaviconGenerated": "Aucun favicon généré",
+    "noFaviconHint": "Téléchargez un SVG ou collez le balisage pour voir les aperçus en direct du navigateur, iOS et Android.",
+    "backgroundColor": "Couleur d'Arrière-plan",
+    "colorTransparent": "Transparent",
+    "colorWhite": "Blanc",
+    "colorDark": "Sombre",
+    "colorCustom": "Personnalisé"
   },
   "profile_dashboard": {
     "nameRequired": "Veuillez saisir votre nom.",
@@ -1460,7 +1485,12 @@
     "fileReadError": "Impossible de lire le fichier SVG.",
     "codeCopied": "Code du composant copié dans le presse-papier !",
     "copyFailed": "Échec de la copie.",
-    "fileDownloaded": "Fichier de composant téléchargé avec succès."
+    "fileDownloaded": "Fichier de composant téléchargé avec succès.",
+    "toastSanitized": "Les scripts en ligne et gestionnaires d'événements non sécurisés ont été supprimés de votre SVG en toute sécurité.",
+    "toastImageCopied": "Image copiée dans le presse-papiers !",
+    "toastNoSvgToCopy": "Aucun code SVG à copier",
+    "toastSvgCopied": "Code SVG copié dans le presse-papiers !",
+    "noPreviewAvailable": "Aucun aperçu disponible"
   },
   "use_case": {
     "badge": "Cas d'utilisation",

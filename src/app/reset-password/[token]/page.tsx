@@ -122,12 +122,16 @@ export default function ResetPasswordPage() {
   // form behind it is dimmed and blurred. The card itself is unchanged.
   if (tokenState === "invalid") {
     return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-        <div className="w-full max-w-[440px]">
+      <div
+        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 cursor-pointer"
+        onClick={() => router.push("/forgot-password")}
+      >
+        <div className="w-full max-w-[440px] cursor-default" onClick={(e) => e.stopPropagation()}>
           <VerificationModal
             variant="invalid"
             ctaHref="/forgot-password"
             ctaLabel="Request New Link"
+            onClose={() => router.push("/forgot-password")}
           />
         </div>
       </div>
@@ -261,7 +265,7 @@ export default function ResetPasswordPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full h-[42px] rounded-[12px] bg-gradient-to-r from-[#D94A1E] to-[#FF9A3D] text-white font-bricolage font-semibold text-[16px] hover:opacity-90 transition-opacity mt-[4px] disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="w-full h-[42px] rounded-[12px] bg-gradient-to-r from-[#D94A1E] to-[#FF9A3D] text-white font-bricolage font-semibold text-[16px] hover:opacity-90 transition-opacity mt-4 mb-2 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {submitting ? "Updating…" : "Set New Password"}
                 </button>

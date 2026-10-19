@@ -40,10 +40,11 @@ export function FaviconGeneratorUI() {
   const tUsage = useTranslations("usage");
   const tA11y = useTranslations("accessibility");
 
-  const [svgCode, setSvgCode] = useState<string>(SAMPLE_FAVICON_SVG);
+  const [svgCode, setSvgCode] = useState<string>("");
   const [appName, setAppName] = useState<string>("My Awesome App");
   const [themeColor, setThemeColor] = useState<string>("#D94A1E");
   const [backgroundColor, setBackgroundColor] = useState<string>("transparent");
+  const [customBgColor, setCustomBgColor] = useState<string>("#FFFFFF");
   const [paddingPercent, setPaddingPercent] = useState<number>(0);
   const [borderRadiusPercent, setBorderRadiusPercent] = useState<number>(0);
   const [webpQuality, setWebpQuality] = useState<number>(0.9);
@@ -215,7 +216,7 @@ export function FaviconGeneratorUI() {
   }
 
   function handleClear() {
-    setSvgCode(SAMPLE_FAVICON_SVG);
+    setSvgCode("");
     setAppName("My Awesome App");
     setThemeColor("#D94A1E");
     setBackgroundColor("transparent");
@@ -246,8 +247,11 @@ export function FaviconGeneratorUI() {
                   <button
                     type="button"
                     onClick={handleClear}
+                    disabled={!svgCode}
                     aria-label="Reset favicon generator"
-                    className="group relative rounded-[6px] px-[12px] py-[4px] font-body font-medium text-[12px] overflow-hidden transition-opacity duration-300 opacity-100 cursor-pointer"
+                    className={`group relative rounded-[6px] px-[12px] py-[4px] font-body font-medium text-[12px] overflow-hidden transition-opacity duration-300 cursor-pointer ${
+                      !svgCode ? "opacity-40 cursor-not-allowed pointer-events-none" : "opacity-100"
+                    }`}
                   >
                     <div
                       className="absolute inset-0 z-0 pointer-events-none"
@@ -281,7 +285,7 @@ export function FaviconGeneratorUI() {
                   id="favicon-svg-textarea"
                   value={svgCode}
                   onChange={(e) => setSvgCode(e.target.value)}
-                  placeholder={SAMPLE_FAVICON_SVG}
+                  placeholder="<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'>&#10;  <!-- Paste your SVG code here -->&#10;</svg>"
                   spellCheck={false}
                   aria-label="SVG input code"
                   className="w-full h-full p-3 md:p-4 resize-none outline-none border-none bg-transparent font-mono text-[13px] leading-[1.6] text-black placeholder:text-[#94A3B8] whitespace-pre-wrap break-all overflow-auto brand-scrollbar"
@@ -303,6 +307,7 @@ export function FaviconGeneratorUI() {
 
               {/* Drag & Drop Upload Box */}
               <div
+                data-testid="favicon-dropzone"
                 onClick={() => fileInputRef.current?.click()}
                 onDragOver={(e) => {
                   e.preventDefault();
@@ -391,66 +396,84 @@ export function FaviconGeneratorUI() {
 
               {/* Realistic Preview Window */}
               <div className="w-full min-w-0 h-[200px] md:h-[302px] rounded-[16px] border border-[#8F8F8F] bg-[#FFFFFF] flex flex-col overflow-hidden shadow-inner">
-                {/* Browser Tab Mockup View */}
-                {activePreviewTab === "tab" && (
-                  <div className="w-full h-full flex flex-col bg-[#F1F5F9]">
-                    <div className="h-[42px] bg-[#E2E8F0] border-b border-[#CBD5E1] flex items-center px-3 gap-2">
-                      <div className="flex items-center gap-1.5 mr-2">
-                        <span className="w-3 h-3 rounded-full bg-[#EF4444] inline-block" />
-                        <span className="w-3 h-3 rounded-full bg-[#F59E0B] inline-block" />
-                        <span className="w-3 h-3 rounded-full bg-[#10B981] inline-block" />
-                      </div>
-                      <div className="flex items-center gap-2 bg-white rounded-t-lg px-3 py-1.5 h-full max-w-[200px] border-t border-x border-[#CBD5E1] shadow-xs">
-                        {preview32 ? (
-                          <img src={preview32} alt="Favicon" className="w-4 h-4 shrink-0" />
-                        ) : (
-                          <span className="w-4 h-4 rounded-full bg-[#D94A1E]" />
-                        )}
-                        <span className="font-body text-[12px] text-[#334155] font-medium truncate">
-                          {appName || "My App"}
-                        </span>
-                      </div>
+                {!packResult ? (
+                  <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-[#FAF6F3]">
+                    <div className="w-12 h-12 rounded-full bg-white border border-[#CBD5E1] flex items-center justify-center mb-3 text-brand-primary shadow-xs">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                      </svg>
                     </div>
-                    <div className="grow flex items-center justify-center p-6 bg-white">
-                      <div className="flex flex-col items-center gap-3 text-center">
-                        <div className="w-16 h-16 rounded-2xl border border-[#E2E8F0] p-2 bg-[#FAF6F3] shadow-xs flex items-center justify-center">
-                          {preview180 && <img src={preview180} alt="Icon" className="w-full h-full object-contain" />}
+                    <p className="font-heading font-semibold text-[15px] text-[#202427]">{t("noFaviconGenerated")}</p>
+                    <p className="font-body text-[12px] text-[#64748B] mt-1 max-w-[280px]">
+                      {t("noFaviconHint")}
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    {/* Browser Tab Mockup View */}
+                    {activePreviewTab === "tab" && (
+                      <div className="w-full h-full flex flex-col bg-[#F1F5F9]">
+                        <div className="h-[42px] bg-[#E2E8F0] border-b border-[#CBD5E1] flex items-center px-3 gap-2">
+                          <div className="flex items-center gap-1.5 mr-2">
+                            <span className="w-3 h-3 rounded-full bg-[#EF4444] inline-block" />
+                            <span className="w-3 h-3 rounded-full bg-[#F59E0B] inline-block" />
+                            <span className="w-3 h-3 rounded-full bg-[#10B981] inline-block" />
+                          </div>
+                          <div className="flex items-center gap-2 bg-white rounded-t-lg px-3 py-1.5 h-full max-w-[200px] border-t border-x border-[#CBD5E1] shadow-xs">
+                            {preview32 ? (
+                              <img src={preview32} alt="Favicon" className="w-4 h-4 shrink-0" />
+                            ) : (
+                              <span className="w-4 h-4 rounded-full bg-[#D94A1E]" />
+                            )}
+                            <span className="font-body text-[12px] text-[#334155] font-medium truncate">
+                              {appName || "My App"}
+                            </span>
+                          </div>
                         </div>
-                        <p className="font-heading font-semibold text-[15px] text-text-dark">{appName}</p>
-                        <p className="font-body text-[12px] text-text-muted">{t("tabPreviewNote")}</p>
+                        <div className="grow flex items-center justify-center p-6 bg-white">
+                          <div className="flex flex-col items-center gap-3 text-center">
+                            <div className="w-16 h-16 rounded-2xl border border-[#E2E8F0] p-2 bg-[#FAF6F3] shadow-xs flex items-center justify-center">
+                              {preview180 && <img src={preview180} alt="Icon" className="w-full h-full object-contain" />}
+                            </div>
+                            <p className="font-heading font-semibold text-[15px] text-text-dark">{appName}</p>
+                            <p className="font-body text-[12px] text-text-muted">{t("tabPreviewNote")}</p>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                )}
+                    )}
 
-                {/* iOS Home Screen Mockup */}
-                {activePreviewTab === "ios" && (
-                  <div className="w-full h-full bg-gradient-to-b from-[#1E293B] to-[#0F172A] flex flex-col items-center justify-center p-4">
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="w-20 h-20 rounded-[20px] overflow-hidden shadow-2xl border border-white/20 flex items-center justify-center bg-white">
-                        {preview180 && <img src={preview180} alt="Apple Touch Icon" className="w-full h-full object-contain" />}
+                    {/* iOS Home Screen Mockup */}
+                    {activePreviewTab === "ios" && (
+                      <div className="w-full h-full bg-gradient-to-b from-[#1E293B] to-[#0F172A] flex flex-col items-center justify-center p-4">
+                        <div className="flex flex-col items-center gap-2">
+                          <div className="w-20 h-20 rounded-[20px] overflow-hidden shadow-2xl border border-white/20 flex items-center justify-center bg-white">
+                            {preview180 && <img src={preview180} alt="Apple Touch Icon" className="w-full h-full object-contain" />}
+                          </div>
+                          <span className="font-body text-[13px] text-white/90 font-medium tracking-wide">
+                            {appName || "App"}
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-white/50 mt-4 font-mono">apple-touch-icon.png (180x180)</span>
                       </div>
-                      <span className="font-body text-[13px] text-white/90 font-medium tracking-wide">
-                        {appName || "App"}
-                      </span>
-                    </div>
-                    <span className="text-[11px] text-white/50 mt-4 font-mono">apple-touch-icon.png (180x180)</span>
-                  </div>
-                )}
+                    )}
 
-                {/* Android Chrome Mockup */}
-                {activePreviewTab === "android" && (
-                  <div className="w-full h-full bg-gradient-to-b from-[#0F766E] to-[#115E59] flex flex-col items-center justify-center p-4">
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="w-20 h-20 rounded-full overflow-hidden shadow-2xl border border-white/20 flex items-center justify-center bg-white">
-                        {preview192 && <img src={preview192} alt="Android Chrome Icon" className="w-full h-full object-contain" />}
+                    {/* Android Chrome Mockup */}
+                    {activePreviewTab === "android" && (
+                      <div className="w-full h-full bg-gradient-to-b from-[#0F766E] to-[#115E59] flex flex-col items-center justify-center p-4">
+                        <div className="flex flex-col items-center gap-2">
+                          <div className="w-20 h-20 rounded-full overflow-hidden shadow-2xl border border-white/20 flex items-center justify-center bg-white">
+                            {preview192 && <img src={preview192} alt="Android Chrome Icon" className="w-full h-full object-contain" />}
+                          </div>
+                          <span className="font-body text-[13px] text-white/90 font-medium tracking-wide">
+                            {appName || "App"}
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-white/50 mt-4 font-mono">android-chrome-192x192.png</span>
                       </div>
-                      <span className="font-body text-[13px] text-white/90 font-medium tracking-wide">
-                        {appName || "App"}
-                      </span>
-                    </div>
-                    <span className="text-[11px] text-white/50 mt-4 font-mono">android-chrome-192x192.png</span>
-                  </div>
+                    )}
+                  </>
                 )}
               </div>
 
@@ -490,6 +513,67 @@ export function FaviconGeneratorUI() {
                         />
                       </div>
                     </label>
+                  </div>
+
+                  {/* Background Color Selector */}
+                  <div className="flex flex-col gap-1.5 font-body text-[12px] text-[#475569]">
+                    <span className="font-medium">{t("backgroundColor")}</span>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {[
+                        { id: "transparent", label: t("colorTransparent"), color: "transparent" },
+                        { id: "#FFFFFF", label: t("colorWhite"), color: "#FFFFFF" },
+                        { id: "#0F172A", label: t("colorDark"), color: "#0F172A" },
+                        { id: "custom", label: t("colorCustom"), color: customBgColor },
+                      ].map((item) => {
+                        const isSelected =
+                          item.id === "custom"
+                            ? backgroundColor !== "transparent" && backgroundColor !== "#FFFFFF" && backgroundColor !== "#0F172A"
+                            : backgroundColor.toLowerCase() === item.id.toLowerCase();
+                        return (
+                          <button
+                            key={item.id}
+                            type="button"
+                            onClick={() => {
+                              if (item.id === "custom") {
+                                setBackgroundColor(customBgColor);
+                              } else {
+                                setBackgroundColor(item.color);
+                              }
+                            }}
+                            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-[8px] text-[12px] border transition-all cursor-pointer ${
+                              isSelected
+                                ? "border-brand-primary bg-orange-50 text-brand-primary font-medium shadow-xs"
+                                : "border-[#CBD5E1] bg-white text-[#475569] hover:border-gray-400"
+                            }`}
+                          >
+                            <span
+                              className="w-3.5 h-3.5 rounded-full border border-gray-300 shrink-0"
+                              style={{
+                                backgroundColor: item.id === "transparent" ? "transparent" : item.id === "custom" ? customBgColor : item.color,
+                                backgroundImage: item.id === "transparent" ? "linear-gradient(45deg, #eee 25%, transparent 25%), linear-gradient(-45deg, #eee 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #eee 75%), linear-gradient(-45deg, transparent 75%, #eee 75%)" : undefined,
+                                backgroundSize: "4px 4px",
+                              }}
+                            />
+                            <span>{item.label}</span>
+                          </button>
+                        );
+                      })}
+                      {backgroundColor !== "transparent" && backgroundColor !== "#FFFFFF" && backgroundColor !== "#0F172A" && (
+                        <div className="flex items-center gap-1.5 ml-1">
+                          <input
+                            type="color"
+                            value={customBgColor}
+                            onChange={(e) => {
+                              const val = e.target.value.toUpperCase();
+                              setCustomBgColor(val);
+                              setBackgroundColor(val);
+                            }}
+                            className="w-6 h-6 p-0 border border-[#CBD5E1] rounded cursor-pointer shrink-0"
+                          />
+                          <span className="font-mono text-[11px] text-[#475569]">{customBgColor}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="grid min-w-0 grid-cols-2 gap-[10px]">

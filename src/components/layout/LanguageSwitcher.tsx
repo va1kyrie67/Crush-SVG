@@ -270,12 +270,12 @@ export function LanguageSwitcher({
                   tabIndex={-1}
                   onClick={() => handleSelectLocale(loc)}
                   onMouseEnter={() => setFocusedIndex(index)}
-                  className={`w-full flex items-center justify-between px-[10px] py-[8px] rounded-[10px] text-left transition-all duration-150 cursor-pointer ${
+                  className={`w-full flex items-center justify-between px-[10px] py-[8px] rounded-[10px] text-left transition-all duration-150 cursor-pointer border ${
                     isSelected
-                      ? "bg-[#FFF1EB] border border-[#D94A1E]/25 text-brand-primary"
+                      ? "bg-[#FFF1EB] border-[#D94A1E]/25 text-brand-primary"
                       : isFocused
-                      ? "bg-[#FAF6F3] text-brand-primary"
-                      : "text-text-dark hover:bg-[#FAF6F3] hover:text-brand-primary border border-transparent"
+                      ? "bg-[#FAF6F3] border-transparent text-brand-primary"
+                      : "text-text-dark hover:bg-[#FAF6F3] hover:text-brand-primary border-transparent"
                   }`}
                 >
                   <div className="flex items-center gap-[10px] min-w-0">

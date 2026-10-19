@@ -72,7 +72,7 @@ export default async function UseCaseIndexPage({
   ]);
 
   return (
-    <main className="w-full flex flex-col items-center min-h-[70vh] bg-background pb-[60px] md:pb-[100px]">
+    <main className="w-full min-w-0 max-w-full overflow-x-hidden flex flex-col items-center min-h-[70vh] bg-background pb-[16px] md:pb-[24px]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
@@ -91,7 +91,7 @@ export default async function UseCaseIndexPage({
           </>
         }
         subtitle={t("listingSubtitle")}
-        className="mb-6 md:mb-10"
+        className="mb-2 md:mb-4"
       />
 
       <UseCaseListing useCases={localizedUseCases} categories={[ALL_CATEGORIES, ...useCaseCategories]} />

@@ -37,7 +37,7 @@ export function SvgOptimizerUI() {
   const tUpload = useTranslations("upload_interface");
   const tA11y = useTranslations("accessibility");
 
-  const [svgCode, setSvgCode] = useState(SAMPLE_OPTIMIZE_SVG);
+  const [svgCode, setSvgCode] = useState("");
   const [precision, setPrecision] = useState<number>(2);
   const [stripComments, setStripComments] = useState(true);
   const [stripMetadata, setStripMetadata] = useState(true);
@@ -110,7 +110,12 @@ export function SvgOptimizerUI() {
   function handleDrop(e: React.DragEvent) {
     e.preventDefault();
     setDragOver(false);
-    void handleFile(e.dataTransfer.files?.[0]);
+    const file = e.dataTransfer.files?.[0];
+    if (!file) {
+      showToast("error", t("invalidSvgFile"));
+      return;
+    }
+    void handleFile(file);
   }
 
   function handleDownload() {
@@ -158,7 +163,7 @@ export function SvgOptimizerUI() {
   }
 
   function handleClear() {
-    setSvgCode(SAMPLE_OPTIMIZE_SVG);
+    setSvgCode("");
     setFileName("optimized.svg");
   }
 
@@ -181,8 +186,11 @@ export function SvgOptimizerUI() {
                   <button
                     type="button"
                     onClick={handleClear}
+                    disabled={!svgCode}
                     aria-label="Clear SVG editor"
-                    className="group relative rounded-[6px] px-[12px] py-[4px] font-body font-medium text-[12px] overflow-hidden transition-opacity duration-300 opacity-100 cursor-pointer"
+                    className={`group relative rounded-[6px] px-[12px] py-[4px] font-body font-medium text-[12px] overflow-hidden transition-all duration-300 ${
+                      !svgCode ? "opacity-40 cursor-not-allowed pointer-events-none" : "opacity-100 cursor-pointer"
+                    }`}
                   >
                     <div
                       className="absolute inset-0 z-0 pointer-events-none"
@@ -205,9 +213,21 @@ export function SvgOptimizerUI() {
               </div>
 
               {/* SVG Code Box */}
-              <div className="relative w-full min-w-0 h-[200px] md:h-[302px] rounded-[16px] border border-[#8F8F8F] bg-[#FFFFFF] overflow-hidden focus-within:border-brand-primary transition-colors">
+              <div
+                onDrop={handleDrop}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragOver(true);
+                }}
+                className="relative w-full min-w-0 h-[200px] md:h-[302px] rounded-[16px] border border-[#8F8F8F] bg-[#FFFFFF] overflow-hidden focus-within:border-brand-primary transition-colors"
+              >
                 <textarea
                   id="optimizer-svg-textarea"
+                  onDrop={handleDrop}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragOver(true);
+                  }}
                   value={svgCode}
                   onChange={(e) => setSvgCode(e.target.value)}
                   placeholder={SAMPLE_OPTIMIZE_SVG}

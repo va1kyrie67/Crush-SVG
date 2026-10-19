@@ -68,11 +68,11 @@ export default async function TeamPage({
       skills: ["Agile Management", "Sprint Planning", "Team Coordination", "Product Delivery"],
     },
     {
-      name: "Ahtisham Ul Haq",
+      name: "Hafiz Arslan",
       role: "Lead Full-Stack Developer",
-      bio: "Full-stack engineer focused on building secure, scalable, and high-performance digital products. Ahtisham turns complex requirements into polished, production-ready solutions.",
-      initials: "AH",
-      linkedin: "https://www.linkedin.com/in/ahtisham-ul-haq-a1ba482aa",
+      bio: "Full-stack engineer focused on building secure, scalable, and high-performance digital products. Arslan turns complex requirements into polished, production-ready solutions.",
+      initials: "HA",
+      linkedin: "https://www.linkedin.com/in/hafiz-arslan-/",
       skills: ["Full-Stack Engineering", "MERN & Next.js", "AI Engineering"],
     },
     {

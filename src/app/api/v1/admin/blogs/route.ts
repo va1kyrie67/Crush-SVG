@@ -58,9 +58,19 @@ export async function GET(request: NextRequest) {
         filter.$and = andClauses
     }
 
+    const sortBy = searchParams.get('sortBy')?.trim() || 'createdAt'
+    const sortOrder = searchParams.get('sortOrder')?.trim() === 'asc' ? 1 : -1
+
+    const sortObj: Record<string, 1 | -1> = {}
+    if (sortBy === 'title') {
+        sortObj.title = sortOrder
+    } else {
+        sortObj.createdAt = sortOrder
+    }
+
     const [docs, total] = await Promise.all([
         Blog.find(filter)
-            .sort({ createdAt: -1 })
+            .sort(sortObj)
             .skip(skip)
             .limit(limit)
             .populate('authorId', 'displayName email')

@@ -195,10 +195,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 : pathname === link.href;
               const Icon = link.icon;
               return (
-                <li key={link.href}>
+                <li key={link.href} className="w-full">
                   <Link 
                     href={link.href}
-                    className={`flex items-center py-3 transition-colors ${
+                    className={`w-full flex items-center py-3 rounded-[8px] transition-colors ${
                       isDesktopSidebarOpen 
                         ? 'space-x-3 pl-3 pr-6 border-l-4'
                         : 'md:justify-center md:px-0 md:border-l-0 md:space-x-0 space-x-3 px-6 border-l-4'
@@ -253,7 +253,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </nav>
 
       {/* Main Content Area */}
-      <main className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden transition-[margin] duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ${isDesktopSidebarOpen ? 'md:ml-[260px]' : 'md:ml-[72px]'}`}>
+      <main className={`flex-1 flex flex-col min-w-0 h-screen overflow-hidden transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] ${isDesktopSidebarOpen ? 'md:ml-[260px]' : 'md:ml-[72px]'}`}>
         {/* TopAppBar (Header) */}
         <header className="flex justify-between items-center w-full px-6 md:pl-4 md:pr-10 h-[70px] flex-shrink-0 bg-white border-b border-[#F2EDE8]">
           <div className="flex items-center space-x-4">

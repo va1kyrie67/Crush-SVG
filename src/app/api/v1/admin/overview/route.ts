@@ -6,12 +6,19 @@ import { auth } from '@/lib/middleware/auth-middleware';
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+let cachedOverview: { data: any; timestamp: number } | null = null;
+const CACHE_TTL_MS = 30 * 1000;
+
 export async function GET(request: NextRequest) {
   try {
     const who = await auth(request);
     if ('error' in who) return who.error;
     if (who.user.role !== 'admin') {
       return errorResponse(403, "forbidden", "Admin access required", undefined, request);
+    }
+
+    if (cachedOverview && Date.now() - cachedOverview.timestamp < CACHE_TTL_MS) {
+      return successResponse(cachedOverview.data);
     }
 
     const tenDaysAgo = new Date();
@@ -24,10 +31,7 @@ export async function GET(request: NextRequest) {
       rawRecentConversions,
       conversionsLast10Days
     ] = await Promise.all([
-      User.aggregate([
-        { $match: VALID_USER_FILTER },
-        { $count: "total" }
-      ]).then(r => r[0]?.total ?? 0).catch(() => 0),
+      User.countDocuments(VALID_USER_FILTER).catch(() => 0),
       ConversionLog.aggregate([
         { $match: { success: true } },
         {
@@ -36,7 +40,7 @@ export async function GET(request: NextRequest) {
             total: { $sum: 1 },
             raster: {
               $sum: {
-                $cond: [{ $in: ["$inputFormat", ["png", "jpg", "jpeg", "webp"]] }, 1, 0]
+                $cond: [{ $in: ["$inputFormat", ["png", "jpg", "jpeg", "webp", "raster", "image", "image/png", "image/jpeg", "image/webp"]] }, 1, 0]
               }
             },
             svg: {
@@ -71,7 +75,7 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    return successResponse({
+    const payload = {
       totalUsers,
       totalConversions,
       rasterConversions,
@@ -79,7 +83,14 @@ export async function GET(request: NextRequest) {
       recentAudits,
       recentConversions,
       conversionsLast10Days
-    });
+    };
+
+    cachedOverview = {
+      data: payload,
+      timestamp: Date.now()
+    };
+
+    return successResponse(payload);
   } catch (error: any) {
     console.error("Dashboard overview error:", error);
     return errorResponse(500, "internal_error", "Failed to load dashboard data");

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
 import { updateConsentDenied, updateConsentGranted } from "@/lib/client/analytics";
 
 const CONSENT_KEY = "crush_cookie_consent";
@@ -14,6 +15,7 @@ type ConsentValue = "granted" | "denied" | null;
 export function CookieConsentBanner() {
   const [consent, setConsent] = useState<ConsentValue | "loading">("loading");
   const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
   const t = useTranslations("cookie_consent");
 
   useEffect(() => {
@@ -40,17 +42,29 @@ export function CookieConsentBanner() {
     setConsent("denied");
   }
 
-  // Don't render if user already made a choice
-  if (!mounted || consent !== null) return null;
+  // Don't render if user already made a choice or if currently in the admin panel
+  if (!mounted || consent !== null || pathname?.startsWith("/admin")) return null;
 
   return createPortal(
     <div
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-[1000] flex justify-center px-4 pb-[max(16px,env(safe-area-inset-bottom))] md:pb-[max(24px,env(safe-area-inset-bottom))]"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-[900] flex justify-center px-4 pb-[max(16px,env(safe-area-inset-bottom))] md:pb-[max(24px,env(safe-area-inset-bottom))]"
       role="dialog"
       aria-modal="false"
       aria-label={t("dialogAria")}
     >
-      <div className="pointer-events-auto w-full max-w-[720px] bg-white border border-[#E5E7EB] rounded-[16px] shadow-[0_12px_40px_rgba(32,36,39,0.2)] px-[16px] py-[12px] md:px-[24px] md:py-[14px] flex flex-col md:flex-row items-start md:items-center gap-[10px] md:gap-[16px]">
+      <div className="pointer-events-auto relative w-full max-w-[720px] bg-white border border-[#E5E7EB] rounded-[16px] shadow-[0_12px_40px_rgba(32,36,39,0.2)] px-[16px] py-[12px] md:px-[24px] md:py-[14px] flex flex-col md:flex-row items-start md:items-center gap-[10px] md:gap-[16px]">
+        {/* Dismiss icon button */}
+        <button
+          type="button"
+          onClick={handleDecline}
+          aria-label="Dismiss cookie notice"
+          className="absolute top-2 right-2 md:hidden text-gray-400 hover:text-gray-600 p-1"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
         {/* Text */}
         <p className="font-body text-[14px] text-[#5A524C] leading-[160%] flex-1">
           {t("message")}{" "}

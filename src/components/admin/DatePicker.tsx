@@ -163,6 +163,7 @@ export function getCalendarDays(month: Date): Date[] {
 }
 
 export function isDateInRange(date: Date, minDate?: string, maxDate?: string): boolean {
+  if (minDate && maxDate && minDate > maxDate) return true;
   const value = formatDateValue(date);
   return (!minDate || value >= minDate) && (!maxDate || value <= maxDate);
 }
@@ -170,6 +171,7 @@ export function isDateInRange(date: Date, minDate?: string, maxDate?: string): b
 function clampToBounds(date: Date, minDate?: string, maxDate?: string): Date {
   const min = minDate ? parseDateValue(minDate) : null;
   const max = maxDate ? parseDateValue(maxDate) : null;
+  if (min && max && min > max) return date;
   if (min && date < min) return min;
   if (max && date > max) return max;
   return date;
@@ -237,8 +239,9 @@ export function DatePicker({
   const todayValue = formatDateValue(new Date());
   const previousMonthEnd = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 0);
   const nextMonthStart = new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + 1, 1);
-  const canShowPreviousMonth = !minDate || formatDateValue(previousMonthEnd) >= minDate;
-  const canShowNextMonth = !maxDate || formatDateValue(nextMonthStart) <= maxDate;
+  const isBoundsInverted = Boolean(minDate && maxDate && minDate > maxDate);
+  const canShowPreviousMonth = isBoundsInverted || !minDate || formatDateValue(previousMonthEnd) >= minDate;
+  const canShowNextMonth = isBoundsInverted || !maxDate || formatDateValue(nextMonthStart) <= maxDate;
   const selectedLabel = selectedDate ? displayDate(selectedDate) : "Select date";
   const monthLabel = visibleMonth.toLocaleDateString("en-US", {
     month: "long",

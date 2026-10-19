@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/Button";
 import { ExportButton } from "@/components/ui/ExportButton";
 import { apiFetch, apiBlob } from "@/lib/client/http";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/lib/client/auth-context";
 import { showToast } from "@/lib/client/toast-bridge";
 import { getAdminCached, setAdminCached, getAdminInFlight, setAdminInFlight } from "@/lib/client/admin-cache";
@@ -36,7 +36,12 @@ export default function AuditsPage() {
   const [error, setError] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
 
+  const isFirstSearch = useRef(true);
   useEffect(() => {
+    if (isFirstSearch.current) {
+      isFirstSearch.current = false;
+      return;
+    }
     const timer = setTimeout(() => {
       setSearch(searchInput);
       setPage(1);
@@ -176,7 +181,7 @@ export default function AuditsPage() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="Search logs..." 
-            className="pl-10 pr-4 py-2.5 bg-white border border-[#F2EDE8] rounded-[8px] font-body text-sm text-text-dark focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10 transition-shadow min-w-[240px] shadow-[0px_2px_12px_0px_rgba(0,0,0,0.04)]"
+            className="pl-10 pr-4 py-2.5 bg-white border border-[#F2EDE8] rounded-[8px] font-body text-base md:text-sm text-text-dark focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10 transition-shadow min-w-[240px] shadow-[0px_2px_12px_0px_rgba(0,0,0,0.04)]"
           />
         </div>
         <ExportButton onClick={handleExportCSV} disabled={loading || exporting} className="w-[130px]" />

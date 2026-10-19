@@ -86,7 +86,7 @@ export default async function SvgGuidesPage({
   ]);
 
   return (
-    <main className="w-full min-h-[60vh] bg-background pb-16">
+    <main className="w-full min-w-0 max-w-full overflow-x-hidden min-h-[60vh] bg-background pb-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema).replace(/</g, "\\u003c") }}
@@ -96,13 +96,13 @@ export default async function SvgGuidesPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema).replace(/</g, "\\u003c") }}
       />
 
-      <div className="flex w-full flex-col items-center px-4">
+      <div className="flex w-full min-w-0 max-w-full flex-col items-center px-4">
         <Hero
           badge={t("badge")}
           title={
             <>
               {t("title").split(" ")[0]}{" "}
-              <span className="bg-gradient-to-r from-brand-primary to-brand-secondary bg-clip-text text-transparent">
+              <span className="text-brand-primary">
                 {t("title").split(" ").slice(1).join(" ") || "Guides"}
               </span>
             </>

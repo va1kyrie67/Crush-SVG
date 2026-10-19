@@ -71,7 +71,7 @@ export function Alert({
         )}
 
         {/* Message Text */}
-        <span className="truncate sm:whitespace-normal">{displayMessage}</span>
+        <span className="break-words sm:whitespace-normal">{displayMessage}</span>
       </div>
 
       {/* Right Close Icon */}

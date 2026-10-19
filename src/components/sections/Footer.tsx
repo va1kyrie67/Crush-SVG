@@ -45,7 +45,7 @@ export function Footer({ logoUrl }: { logoUrl?: string }) {
   };
 
   return (
-    <footer className="w-full bg-[#FCF1ED]">
+    <footer className="w-full min-w-0 max-w-full overflow-hidden bg-[#FCF1ED]">
       <div className="w-full max-w-[1440px] mx-auto px-[16px] md:px-[40px] lg:px-[80px] pt-[40px] md:pt-[60px] pb-[20px] flex flex-col items-center">
         <div className="w-full flex flex-col xl:flex-row justify-between items-center xl:items-start gap-[32px] xl:gap-0">
 
@@ -104,26 +104,24 @@ export function Footer({ logoUrl }: { logoUrl?: string }) {
             <Link href="/background-remover" onClick={(e) => handlePageClick(e, '/background-remover')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("bgRemoverFull")}</Link>
             <Link href="/image-resizer" onClick={(e) => handlePageClick(e, '/image-resizer')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("imageResizerFull")}</Link>
             <Link href="/svg-optimizer" onClick={(e) => handlePageClick(e, '/svg-optimizer')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("svgOptimizerFull")}</Link>
-            <Link href="/favicon-generator" onClick={(e) => handlePageClick(e, '/favicon-generator')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("faviconGeneratorFull")}</Link>
-            <Link href="/svg-to-react" onClick={(e) => handlePageClick(e, '/svg-to-react')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("svgToReact")}</Link>
           </div>
-          {/* Column 2: Resources */}
+          {/* Column 2: Tools & Resources */}
           <div className="flex flex-col items-center md:items-start w-auto md:w-[135px] xl:w-[110px] gap-[10px] md:gap-[14px]">
             <h4 className="font-heading font-bold text-[14px] leading-[100%] text-[#202427] mb-[4px]">{t("resources")}</h4>
+            <Link href="/favicon-generator" onClick={(e) => handlePageClick(e, '/favicon-generator')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("faviconGeneratorFull")}</Link>
+            <Link href="/svg-to-react" onClick={(e) => handlePageClick(e, '/svg-to-react')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("svgToReact")}</Link>
             <Link href="/blog" onClick={(e) => handlePageClick(e, '/blog')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">Blog</Link>
             <Link href="/svg-guides" onClick={(e) => handlePageClick(e, '/svg-guides')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("svgGuides")}</Link>
-            <Link href="/help" onClick={(e) => handlePageClick(e, '/help')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("helpFaq")}</Link>
-            <Link href="/support" onClick={(e) => handlePageClick(e, '/support')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("supportHub")}</Link>
             <Link href="/changelog" onClick={(e) => handlePageClick(e, '/changelog')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("changelog")}</Link>
-            <Link href="/contact-us" onClick={(e) => handlePageClick(e, '/contact-us')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("contactUs")}</Link>
           </div>
           {/* Column 3: Company */}
           <div className="flex flex-col items-center md:items-start w-auto md:w-[135px] xl:w-[110px] gap-[10px] md:gap-[14px]">
             <h4 className="font-heading font-bold text-[14px] leading-[100%] text-[#202427] mb-[4px]">{t("company")}</h4>
             <Link href="/about" onClick={(e) => handlePageClick(e, '/about')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("aboutUs")}</Link>
             <Link href="/team" onClick={(e) => handlePageClick(e, '/team')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("ourTeam")}</Link>
+            <Link href="/help" onClick={(e) => handlePageClick(e, '/help')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("helpFaq")}</Link>
+            <Link href="/contact-us" onClick={(e) => handlePageClick(e, '/contact-us')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("contactUs")}</Link>
             <Link href="/privacy-policy" onClick={(e) => handlePageClick(e, '/privacy-policy')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("privacyPolicy")}</Link>
-            <Link href="/terms" onClick={(e) => handlePageClick(e, '/terms')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("termsOfService")}</Link>
           </div>
           {/* Column 4: Use Cases */}
           <div className="flex flex-col items-center md:items-start w-auto md:w-[135px] xl:w-[110px] gap-[10px] md:gap-[14px]">
@@ -132,6 +130,7 @@ export function Footer({ logoUrl }: { logoUrl?: string }) {
             <Link href={"/use-case/svg-to-png-for-email-signatures" as any} onClick={(e) => handlePageClick(e, '/use-case/svg-to-png-for-email-signatures')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("emailSignatures")}</Link>
             <Link href={"/use-case/svg-to-png-transparent-background" as any} onClick={(e) => handlePageClick(e, '/use-case/svg-to-png-transparent-background')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("transparentBg")}</Link>
             <Link href={"/use-case/high-resolution-svg-to-png" as any} onClick={(e) => handlePageClick(e, '/use-case/high-resolution-svg-to-png')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("highResolution")}</Link>
+            <Link href="/terms" onClick={(e) => handlePageClick(e, '/terms')} className="font-body font-normal text-[14px] md:text-[12px] leading-[100%] text-[#374151] hover:text-brand-primary transition-colors">{t("termsOfService")}</Link>
           </div>
         </div>
 
@@ -198,7 +197,7 @@ export function Footer({ logoUrl }: { logoUrl?: string }) {
       {/* Converters & Engines Section */}
       <div className="w-full mt-[24px] md:mt-[40px]">
         <h4 className="font-heading font-bold text-[14px] md:text-[16px] leading-[120%] text-[#353A3E] text-center mb-[16px] md:mb-[20px]">{t("convertersEngines")}</h4>
-        <div className="grid grid-cols-[repeat(2,minmax(0,1fr))] md:grid-cols-4 gap-[12px] md:gap-[16px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[12px] md:gap-[16px]">
           <Link
             href="/"
             onClick={(e) => handlePageClick(e, '/')}
@@ -256,7 +255,7 @@ export function Footer({ logoUrl }: { logoUrl?: string }) {
           <Link
             href="/svg-to-react"
             onClick={(e) => handlePageClick(e, '/svg-to-react')}
-            className="col-span-2 md:col-span-1 w-1/2 min-w-0 md:w-auto justify-self-center md:justify-self-stretch grid grid-cols-[28px_minmax(0,1fr)] items-center gap-x-2 gap-y-2 p-[12px] md:p-[16px] bg-white rounded-[8px] border border-[#EAEAEA] hover:border-brand-primary/30 hover:shadow-[0px_2px_12px_0px_rgba(217,74,30,0.08)] transition-all group"
+            className="grid min-w-0 grid-cols-[28px_minmax(0,1fr)] items-center gap-x-2 gap-y-2 p-[12px] md:p-[16px] bg-white rounded-[8px] border border-[#EAEAEA] hover:border-brand-primary/30 hover:shadow-[0px_2px_12px_0px_rgba(217,74,30,0.08)] transition-all group"
           >
             <span className="w-[28px] h-[28px] rounded-[6px] bg-[#FFF5F2] text-brand-primary flex items-center justify-center border border-brand-primary/20 font-heading font-bold text-[10px] group-hover:bg-brand-primary group-hover:text-white transition-colors">RCT</span>
             <span className="min-w-0 break-words [overflow-wrap:anywhere] font-heading font-semibold text-[13px] md:text-[14px] text-text-dark group-hover:text-brand-primary transition-colors">{t("svgToReactFull")}</span>

@@ -58,7 +58,7 @@ export function ContactUsClient() {
       {/* Header Section */}
       <Hero
         badge={t("badge")}
-        title={<>{t("title").split(" ")[0]} <span className="bg-gradient-to-r from-brand-primary to-brand-secondary text-transparent bg-clip-text">{t("title").split(" ").slice(1).join(" ") || "Us"}</span></>}
+        title={<>{t("title").split(" ")[0]} <span className="text-brand-primary">{t("title").split(" ").slice(1).join(" ") || "Us"}</span></>}
         subtitle={<>{t("subtitle")} <Link href="/team" className="text-brand-primary hover:underline font-medium">our team</Link> at <a href="https://www.thenevon.com" target="_blank" rel="noopener noreferrer" className="text-brand-primary hover:underline font-medium">The Nevon</a>.</>}
         className="mb-[24px] md:mb-[40px]"
       />
@@ -175,8 +175,8 @@ export function ContactUsClient() {
 
         <div className="w-full flex flex-col items-center justify-center gap-[8px] mt-[16px] md:mt-[24px] pt-[16px] md:pt-[24px] border-t border-[#F2EDE8]">
           <span className="font-afacad text-[16px] text-text-muted">{tContact("orEmailUs")}</span>
-          <a href="mailto:support@crushsvg.net" className="font-afacad font-semibold text-[16px] text-brand-primary hover:underline">
-            support@crushsvg.net
+          <a href="mailto:contact@crushsvg.net" className="font-afacad font-semibold text-[16px] text-brand-primary hover:underline">
+            contact@crushsvg.net
           </a>
         </div>
       </div>

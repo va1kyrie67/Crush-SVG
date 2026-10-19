@@ -66,6 +66,8 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 30px;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 /* Japanese locale: override heading/body fonts with Noto Sans JP */
@@ -76,6 +78,15 @@ html[lang="ja"] {
 
 body {
   @apply font-body text-text-body bg-background;
+  overflow-x: hidden;
+  max-width: 100vw;
+  min-width: 0;
+}
+
+/* Global overflow-wrap safeguard for unbroken markup, code, or URLs */
+pre, code, textarea {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* Prevent iOS auto-zoom on inputs */

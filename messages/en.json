@@ -707,7 +707,7 @@
     "ctaButton": "Start Converting Now"
   },
   "team_page": {
-    "metaTitle": "Meet the Engineers & Designers Behind CrushSVG | The Nevon",
+    "metaTitle": "CrushSVG Team - Meet the Engineers & Designers Behind CrushSVG | The Nevon",
     "metaDesc": "Meet the software engineers, product designers, and web performance experts at The Nevon building fast, privacy-focused vector tools for CrushSVG.",
     "badge": "Engineering & Design",
     "title": "Meet the Team",
@@ -783,6 +783,7 @@
   "cookies_page": {
     "metaTitle": "Cookies Policy & Web Tracking Controls | CrushSVG Tools",
     "metaDesc": "Understand how CrushSVG uses essential cookies and local storage to save user preferences, manage authentication, and optimize application performance.",
+    "badge": "Cookies Policy",
     "title": "Cookies Policy",
     "subtitle": "Last updated: August 2026 • Part of CrushSVG by The Nevon"
   },
@@ -844,7 +845,7 @@
   "blog_page": {
     "metaTitle": "CrushSVG Blog: Email Marketing & SVG Conversion Guides",
     "metaDesc": "Explore actionable guides, checklists, and tutorials on converting SVG to PNG, fixing broken email images in Outlook and Gmail, and vector optimization.",
-    "badge": "CrushSVG Blog & Guides",
+    "badge": "CrushSVG Blog",
     "heroTitlePrefix": "From Vector to Inbox,",
     "heroTitleHighlight": "Tips & Best Practices",
     "heroSubtitle": "Practical guides, checklists, and deep dives on SVG optimization, high-res PNG conversion, and bulletproof image rendering across Outlook and Gmail.",
@@ -1013,6 +1014,7 @@
     "signUpFree": "Sign Up For Free"
   },
   "toasts": {
+    "fileLoaded": "SVG loaded successfully",
     "loggedOut": "You've been logged out",
     "signedIn": "Signed in successfully. Welcome back!",
     "passwordUpdated": "Password updated. Please sign in again.",
@@ -1044,7 +1046,12 @@
     "accountCreatedSuccess": "Account created! Please check your email to verify your account.",
     "somethingWentWrong": "Something went wrong. Please try again.",
     "resendLinkSuccess": "Verification email sent successfully.",
-    "couldNotResend": "Could not resend verification email. Please try again."
+    "couldNotResend": "Could not resend verification email. Please try again.",
+    "clipboardEmpty": "Clipboard is empty",
+    "pressCtrlV": "Please press Ctrl+V to paste",
+    "sanitizedSvg": "Unsafe inline scripts or event handlers were removed for security.",
+    "largeSvgClientOnly": "Large SVG converted in your browser. Background removal is not available for files of this size.",
+    "imageCopied": "Image copied to clipboard!"
   },
   "bg_remover": {
     "title": "Background Remover",
@@ -1168,7 +1175,11 @@
       "errorNoImage": "No image selected. Upload an image to get started.",
       "successRemoved": "Background removed! Your image is ready to download.",
       "successDownload": "Your download has started"
-    }
+    },
+    "presetColors": "Preset Colors",
+    "dimensions": "Dimensions",
+    "aspect": "Aspect",
+    "scale": "Scale"
   },
   "faq_footer": {
     "specificQuestion": "Have a more specific question?",
@@ -1262,7 +1273,8 @@
     "none": "None",
     "low": "Low",
     "medium": "Medium",
-    "high": "High"
+    "high": "High",
+    "toastImageLoaded": "PNG image loaded successfully"
   },
   "image_resizer": {
     "title": "Image Resizer",
@@ -1340,7 +1352,13 @@
     "clearUploadedAria": "Clear uploaded image",
     "uploadFileAria": "Upload image file for resizing",
     "qualityAria": "Output quality percentage",
-    "uploadImageAlt": "Upload Image"
+    "uploadImageAlt": "Upload Image",
+    "toastCleared": "Cleared image and settings",
+    "toastNoImage": "No image selected. Upload an image to get started.",
+    "toastResizeComplete": "Image resized! Ready to download.",
+    "toastDownloadStarted": "Your download has started",
+    "toastPasted": "Image pasted from clipboard",
+    "toastImageLoaded": "Image loaded successfully"
   },
   "steps_section": {
     "howToSvgPng": "How to Convert SVG to PNG Online",
@@ -1439,7 +1457,14 @@
     "webpDownloadedSuccess": "WebP image exported successfully!",
     "webpFailed": "Failed to generate WebP image.",
     "snippetCopied": "HTML head snippet copied to clipboard!",
-    "copyFailed": "Failed to copy to clipboard."
+    "copyFailed": "Failed to copy to clipboard.",
+    "noFaviconGenerated": "No Favicon Generated",
+    "noFaviconHint": "Upload an SVG or paste markup to see live browser, iOS, and Android previews.",
+    "backgroundColor": "Background Color",
+    "colorTransparent": "Transparent",
+    "colorWhite": "White",
+    "colorDark": "Dark",
+    "colorCustom": "Custom"
   },
   "profile_dashboard": {
     "nameRequired": "Please enter your display name.",
@@ -1500,7 +1525,12 @@
     "fileReadError": "Could not read SVG file content.",
     "codeCopied": "Component code copied to clipboard!",
     "copyFailed": "Failed to copy to clipboard.",
-    "fileDownloaded": "Component file downloaded successfully."
+    "fileDownloaded": "Component file downloaded successfully.",
+    "toastSanitized": "Unsafe inline scripts and event handlers were safely removed from your SVG.",
+    "toastImageCopied": "Image copied to clipboard!",
+    "toastNoSvgToCopy": "No SVG code to copy",
+    "toastSvgCopied": "SVG code copied to clipboard!",
+    "noPreviewAvailable": "No preview available"
   },
   "a11y": {
     "crushsvg_icon": "CrushSVG Icon",

@@ -40,9 +40,9 @@ export function BlogListing({ posts, categories }: BlogListingProps) {
   return (
     <div className="w-full max-w-[1140px] px-[16px] md:px-[32px] py-[32px] md:py-[56px] flex flex-col gap-[40px] md:gap-[60px]">
       {/* Search & Category Filter Controls */}
-      <div className="w-full flex flex-col md:flex-row items-center justify-between gap-[16px] bg-white rounded-[16px] md:rounded-[20px] p-[16px] md:p-[20px] border border-[#EAEAEA] shadow-[0px_4px_30px_rgba(0,0,0,0.03)]">
+      <div className="w-full flex flex-col md:flex-row items-stretch md:items-center justify-between gap-[16px] bg-white rounded-[16px] md:rounded-[20px] p-[12px] md:p-[16px] border border-[#EAEAEA] shadow-xs">
         {/* Category Pills */}
-        <div className="flex items-center gap-[8px] overflow-x-auto w-full md:w-auto pb-[4px] md:pb-0 scrollbar-none">
+        <div className="flex items-center gap-[8px] overflow-x-auto w-full md:w-auto py-1 scrollbar-none">
           {categories.map((cat) => {
             const isActive = selectedCategory === cat;
             return (
@@ -50,10 +50,10 @@ export function BlogListing({ posts, categories }: BlogListingProps) {
                 key={cat}
                 type="button"
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-[16px] py-[8px] rounded-[30px] text-[13px] md:text-[14px] font-heading font-medium transition-all whitespace-nowrap cursor-pointer ${
+                className={`px-[16px] py-[8px] rounded-[30px] text-[13px] md:text-[14px] font-heading transition-all whitespace-nowrap cursor-pointer ${
                   isActive
-                    ? "bg-gradient-to-r from-[#D94A1E] to-[#FF9A3D] text-white shadow-[0px_4px_16px_rgba(217,74,30,0.25)]"
-                    : "bg-white border border-[#EAEAEA] text-[#4B5563] hover:border-brand-primary hover:text-brand-primary"
+                    ? "bg-gradient-to-r from-[#D94A1E] to-[#FF9A3D] text-white shadow-xs font-semibold"
+                    : "bg-[#F8FAFC] md:bg-white border border-[#E2E8F0] text-[#475569] hover:border-brand-primary/40 hover:text-brand-primary font-medium"
                 }`}
               >
                 {cat}
@@ -63,9 +63,9 @@ export function BlogListing({ posts, categories }: BlogListingProps) {
         </div>
 
         {/* Search Input */}
-        <div className="relative w-full md:w-[300px] shrink-0">
+        <div className="relative w-full md:w-[320px] lg:w-[360px] shrink-0">
           <svg
-            className="absolute left-[14px] top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted"
+            className="absolute left-[12px] top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -82,13 +82,13 @@ export function BlogListing({ posts, categories }: BlogListingProps) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search articles & guides..."
-            className="w-full pl-[38px] pr-[32px] py-[9px] bg-[#FAF6F3] rounded-[10px] text-[14px] text-text-dark placeholder:text-text-muted border border-[#EAEAEA] focus:border-brand-primary focus:bg-white focus:outline-none transition-all font-body"
+            className="w-full pl-[38px] pr-[34px] py-[9px] bg-[#FAF6F3] rounded-[10px] text-[14px] text-text-dark placeholder:text-text-muted border border-[#EAEAEA] focus:border-brand-primary focus:bg-white focus:outline-none transition-all font-body"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery("")}
-              className="absolute right-[12px] top-1/2 -translate-y-1/2 text-[12px] text-text-muted hover:text-text-dark font-body"
+              className="absolute right-[12px] top-1/2 -translate-y-1/2 text-[12px] text-text-muted hover:text-text-dark font-body cursor-pointer"
             >
               ✕
             </button>
@@ -213,7 +213,7 @@ export function BlogListing({ posts, categories }: BlogListingProps) {
             href="/#converter"
             className="inline-flex items-center justify-center h-[42px] md:h-[46px] px-[20px] md:px-[26px] rounded-[8px] bg-gradient-to-r from-[#D94A1E] to-[#FF9A3D] font-heading font-medium text-[14px] md:text-[16px] text-white tracking-[0.04em] hover:opacity-90 transition-opacity"
           >
-            Launch Converter
+            Try Our Converter
           </Link>
         </div>
       </section>

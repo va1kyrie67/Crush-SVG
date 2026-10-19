@@ -80,10 +80,18 @@ export async function POST(request: NextRequest) {
 
     const guestId = usage.kind === "guest" ? ensureGuestId(request).guestId ?? undefined : undefined;
 
+    const mimeToExt: Record<string, string> = {
+      "image/png": "png",
+      "image/jpeg": "jpg",
+      "image/jpg": "jpg",
+      "image/webp": "webp",
+    };
+    const inputExt = mimeToExt[file.type?.toLowerCase()] || file.name?.split('.').pop()?.toLowerCase() || "png";
+
     await logConversion({
       userId: usage.userId,
       guestId,
-      inputFormat: file.type || "image",
+      inputFormat: inputExt,
       outputFormat: "svg",
       originalSize,
       success: true,
@@ -143,12 +151,18 @@ async function logConversionError(request: NextRequest, error: unknown) {
   const who = await auth(request);
   const userId = "user" in who ? who.user.id : undefined;
   const guestId = !userId ? ensureGuestId(request).guestId : null;
+  const reason = error instanceof RasterConversionError 
+    ? `${error.code}: ${error.message}`
+    : error instanceof Error 
+      ? error.message 
+      : "vectorization_failed";
+
   await logConversion({
     userId,
     guestId,
-    inputFormat: "image",
+    inputFormat: "raster",
     outputFormat: "svg",
     success: false,
-    errorReason: error instanceof Error ? error.message : "vectorization_failed",
+    errorReason: reason,
   });
 }

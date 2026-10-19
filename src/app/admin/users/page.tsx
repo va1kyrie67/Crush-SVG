@@ -354,8 +354,7 @@ export default function UsersPage() {
       }
     } catch (err: any) {
       const msg = err?.message || "Failed to import CSV. Please verify file format.";
-      setError(msg);
-      showToast("error", msg, { id: "import-users" });
+      showToast("error", msg, { id: "import-users", duration: 5000 });
     } finally {
       setImporting(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -387,12 +386,23 @@ export default function UsersPage() {
     setPage(1);
   };
 
+  const scrollToTop = () => {
+    const mainEl = document.querySelector('main');
+    if (mainEl) {
+      mainEl.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   const nextPage = () => {
     setPage((prev) => prev + 1);
+    scrollToTop();
   };
 
   const prevPage = () => {
     setPage((prev) => Math.max(1, prev - 1));
+    scrollToTop();
   };
 
   return (

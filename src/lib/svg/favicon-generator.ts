@@ -161,7 +161,15 @@ export async function canvasToWebP(canvas: HTMLCanvasElement, quality: number = 
  */
 export async function loadSvgImage(svgContent: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
-    const blob = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
+    let preparedSvg = svgContent;
+    // If SVG doesn't have explicit width or height attributes, inject them from viewBox so it renders properly in canvas
+    if (!/<svg[^>]*\b(width|height)\s*=/i.test(preparedSvg)) {
+      const viewBoxMatch = preparedSvg.match(/viewBox\s*=\s*["']?\s*(-?[\d.]+)[,\s]+(-?[\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)\s*["']?/i);
+      if (viewBoxMatch && viewBoxMatch[3] && viewBoxMatch[4]) {
+        preparedSvg = preparedSvg.replace(/<svg\b/i, `<svg width="${viewBoxMatch[3]}" height="${viewBoxMatch[4]}" `);
+      }
+    }
+    const blob = new Blob([preparedSvg], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const img = new window.Image();
     img.crossOrigin = "anonymous";
@@ -208,13 +216,19 @@ export async function generateFaviconPack(
   const icoBuffers: { width: number; height: number; data: Uint8Array }[] = [];
 
   for (const s of sizes) {
+    // Apple Touch icon requires an opaque background per iOS design guidelines
+    const effectiveBg =
+      s.name === "apple-touch-icon.png" && backgroundColor === "transparent"
+        ? "#FFFFFF"
+        : backgroundColor;
+
     const canvas = await renderImageToCanvas(
       img,
       s.width,
       s.height,
       paddingPercent,
       borderRadiusPercent,
-      backgroundColor
+      effectiveBg
     );
     const { data, blob, dataUrl } = await canvasToPngBuffer(canvas);
 

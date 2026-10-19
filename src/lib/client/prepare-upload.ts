@@ -44,7 +44,9 @@ export async function prepareImageForUpload(file: File, maxBytes: number = SAFE_
 
   try {
     const isJpeg = file.type === 'image/jpeg'
-    let scale = 1
+    // Start with a smart scale estimate if the file is significantly above maxBytes
+    let scale = Math.min(1, Math.sqrt((maxBytes * 0.95) / file.size))
+    let quality = isJpeg ? JPEG_QUALITY : WEBP_QUALITY
 
     for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
       const width = Math.max(1, Math.round(bitmap.width * scale))
@@ -56,6 +58,7 @@ export async function prepareImageForUpload(file: File, maxBytes: number = SAFE_
       canvas.height = height
       const ctx = canvas.getContext('2d')
       if (!ctx) break
+      ctx.imageSmoothingEnabled = true
       ctx.imageSmoothingQuality = 'high'
       ctx.drawImage(bitmap, 0, 0, width, height)
 
@@ -63,13 +66,19 @@ export async function prepareImageForUpload(file: File, maxBytes: number = SAFE_
       // which keeps transparency at a fraction of PNG's size; browsers that
       // cannot encode WebP silently return PNG, which the loop then downscales.
       const preferred = isJpeg ? 'image/jpeg' : 'image/webp'
-      const blob = await canvasToBlob(canvas, preferred, isJpeg ? JPEG_QUALITY : WEBP_QUALITY)
+      const blob = await canvasToBlob(canvas, preferred, quality)
       if (blob && blob.size <= maxBytes) {
         const type = blob.type || preferred
         return new File([blob], renameWithExtension(file.name, type), { type })
       }
 
-      scale *= SCALE_STEP
+      if (blob && blob.size > maxBytes) {
+        const ratio = Math.sqrt(maxBytes / blob.size) * 0.92
+        scale = Math.min(scale * SCALE_STEP, scale * ratio)
+        quality = Math.max(0.75, quality * 0.95)
+      } else {
+        scale *= SCALE_STEP
+      }
     }
   } finally {
     bitmap.close()

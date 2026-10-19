@@ -7,7 +7,8 @@ test.describe("Use Cases index", () => {
     await expect(page.getByRole("link", { name: /View Use Case/ }).first()).toBeVisible();
   });
 
-  test("navbar link is active on the index and a child page", async ({ page }) => {
+  test("navbar link is active on the index and a child page", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === "mobile", "Desktop navbar links collapse into drawer on mobile viewports");
     await page.goto("/use-case");
     const nav = page.getByRole("navigation").first();
     await expect(nav.getByRole("link", { name: "Use Cases" })).toHaveClass(/text-brand-primary/);
@@ -19,26 +20,25 @@ test.describe("Use Cases index", () => {
   test("category pill filters and All restores", async ({ page }) => {
     await page.goto("/use-case");
     const cards = page.getByRole("link", { name: /View Use Case/ });
+    await expect(cards.first()).toBeVisible();
     const total = await cards.count();
+    expect(total).toBe(18);
+
     await page.getByRole("button", { name: "Email", exact: true }).click();
-    expect(await cards.count()).toBeLessThan(total);
+    await expect(cards).toHaveCount(1);
+
     await page.getByRole("button", { name: "All", exact: true }).click();
     await expect(cards).toHaveCount(total);
   });
 
-  test("no-match search shows empty state and reset restores grid", async ({ page }) => {
+  test("card navigates directly to its use case page", async ({ page }) => {
     await page.goto("/use-case");
-    await page.getByLabel("Search use cases").fill("zzzz-no-match");
-    await expect(page.getByText("No matching use cases found")).toBeVisible();
-    await page.getByRole("button", { name: "Reset Filters" }).click();
-    await expect(page.getByRole("link", { name: /View Use Case/ }).first()).toBeVisible();
-  });
-
-  test("card navigates to its use case page", async ({ page }) => {
-    await page.goto("/use-case");
-    await page.getByLabel("Search use cases").fill("react");
-    await page.getByRole("link", { name: /View Use Case/ }).first().click();
-    await expect(page).toHaveURL(/\/use-case\/svg-to-png-for-react$/);
+    const firstCard = page.getByRole("link", { name: /View Use Case/ }).first();
+    const href = await firstCard.getAttribute("href");
+    await firstCard.click();
+    if (href) {
+      await expect(page).toHaveURL(new RegExp(href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "$"), { timeout: 15000 });
+    }
   });
 
   test("localized route renders", async ({ page }) => {

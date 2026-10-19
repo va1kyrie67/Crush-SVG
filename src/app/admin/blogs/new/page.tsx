@@ -8,6 +8,7 @@ import { showToast } from "@/lib/client/toast-bridge";
 import { BlogEditor } from "@/components/admin/BlogEditor/BlogEditor";
 import { CoverImageUpload } from "@/components/admin/BlogEditor/CoverImageUpload";
 import { useAuth } from "@/lib/client/auth-context";
+import Link from "next/link";
 import { AdminLoader } from "@/components/admin/AdminLoader";
 
 export default function NewBlogPage() {
@@ -127,11 +128,18 @@ export default function NewBlogPage() {
             {/* Page Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
+                    <nav aria-label="Breadcrumb" className="flex items-center gap-2 font-body text-xs text-text-muted mb-2">
+                        <Link href="/admin/blogs" className="hover:text-brand-primary transition-colors flex items-center gap-1">
+                            <span>Blogs</span>
+                        </Link>
+                        <span>/</span>
+                        <span className="text-text-dark font-medium">New Post</span>
+                    </nav>
                     <h2 className="font-heading font-bold text-3xl md:text-4xl text-text-dark mb-2">New Blog Post</h2>
                     <p className="font-body text-text-muted">Create a new blog post for the CrushSVG blog.</p>
                 </div>
                 <div className="flex gap-3">
-                    <Button variant="solid" onClick={() => handleSave(false)} disabled={saving} className="shadow-sm">
+                    <Button variant="outline" onClick={() => handleSave(false)} disabled={saving} className="shadow-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
                         Save Draft
                     </Button>
@@ -217,15 +225,22 @@ export default function NewBlogPage() {
                                     <span className="font-body font-semibold text-sm text-text-dark">Publish Status</span>
                                     <p className="font-body text-xs text-text-muted mt-0.5">Published posts are visible on the public blog page</p>
                                 </div>
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={published}
-                                        onChange={(e) => { setPublished(e.target.checked); setIsDirty(true); }}
-                                        className="sr-only peer"
+                                <button
+                                    type="button"
+                                    role="switch"
+                                    aria-checked={published}
+                                    onClick={() => { setPublished(!published); setIsDirty(true); }}
+                                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-primary/30 ${
+                                        published ? 'bg-brand-primary' : 'bg-gray-200'
+                                    }`}
+                                >
+                                    <span
+                                        aria-hidden="true"
+                                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                                            published ? 'translate-x-5' : 'translate-x-0'
+                                        }`}
                                     />
-                                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-primary"></div>
-                                </label>
+                                </button>
                             </div>
                         </div>
                     </div>

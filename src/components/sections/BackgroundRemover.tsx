@@ -199,7 +199,6 @@ const BG_OPTIONS: DropdownOption[] = [
   { value: "Transparent", label: "Transparent", desc: "Remove background, alpha PNG" },
   { value: "White", label: "White", desc: "Solid white background" },
   { value: "Black", label: "Black", desc: "Solid black background" },
-  { value: "Custom", label: "Custom Color", desc: "Fill with chosen background color" },
 ];
 
 const COLOR_PRESETS = [
@@ -334,6 +333,7 @@ disabled,
    panelMaxHeight = 240,
    optionSwatchColors,
 }: BgRemoverDropdownProps) {
+  const t = useTranslations("bg_remover");
   const selected = options.find((o) => o.value === value) || options[0];
 
   return (
@@ -480,39 +480,46 @@ disabled,
           {onCustomColorChange && customColor && value === "Custom" && (
             <div
               onClick={(e) => e.stopPropagation()}
-              className="border-t border-gray-200/80 px-[10px] py-[6px] flex items-center gap-[5px] bg-[#FAF9F6] flex-wrap shrink-0"
+              className="border-t border-[#F2EDE8] p-3 flex flex-col gap-2.5 bg-[#FAF9F6] shrink-0"
             >
-              {COLOR_PRESETS.map((c) => (
-                <button
-                  key={c.hex}
-                  type="button"
-                  title={c.name}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onCustomColorChange(c.hex);
-                  }}
-                  className={`w-[14px] h-[14px] rounded-full border border-gray-300 transition-transform shrink-0 ${
-                    customColor.toLowerCase() === c.hex.toLowerCase()
-                      ? "scale-115 ring-2 ring-brand-primary"
-                      : "hover:scale-105"
-                  }`}
-                  style={{ backgroundColor: c.hex }}
-                />
-              ))}
-              <input
-                type="color"
-                value={customColor}
-                onChange={(e) => onCustomColorChange(e.target.value)}
-                className="w-[16px] h-[16px] p-0 border-none rounded cursor-pointer shrink-0"
-                aria-label="Pick custom color"
-              />
-              <input
-                type="text"
-                value={customColor}
-                onChange={(e) => onCustomColorChange(normalizeHex(e.target.value))}
-                maxLength={7}
-                className="w-[50px] h-[20px] px-1 font-mono text-[10px] border border-gray-300 rounded outline-none focus:border-brand-primary uppercase text-center ml-auto"
-              />
+              <div className="flex items-center justify-between">
+                <span className="font-body text-xs font-semibold text-text-muted">{t("presetColors")}</span>
+                <div className="flex items-center gap-1.5">
+                  <input
+                    type="color"
+                    value={customColor}
+                    onChange={(e) => onCustomColorChange(e.target.value)}
+                    className="w-6 h-6 p-0 border border-gray-300 rounded cursor-pointer"
+                    aria-label="Pick custom color"
+                  />
+                  <input
+                    type="text"
+                    value={customColor}
+                    onChange={(e) => onCustomColorChange(normalizeHex(e.target.value))}
+                    maxLength={7}
+                    className="w-[72px] h-6 px-1.5 font-mono text-xs border border-gray-300 rounded outline-none focus:border-brand-primary uppercase text-center bg-white"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
+                {COLOR_PRESETS.map((c) => (
+                  <button
+                    key={c.hex}
+                    type="button"
+                    title={c.name}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onCustomColorChange(c.hex);
+                    }}
+                    className={`w-5 h-5 rounded-full border border-gray-300 transition-transform shrink-0 ${
+                      customColor.toLowerCase() === c.hex.toLowerCase()
+                        ? "scale-115 ring-2 ring-brand-primary"
+                        : "hover:scale-110"
+                    }`}
+                    style={{ backgroundColor: c.hex }}
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -1198,7 +1205,7 @@ export function BackgroundRemover() {
                           borderRadius: "inherit",
                         }}
                       />
-                      <div className={`absolute inset-0 z-0 opacity-0 ${processing ? '' : 'group-hover:opacity-100'} transition-opacity duration-300 ease-in-out pointer-events-none bg-gradient-to-r from-[#D94A1E] to-[#FF9A3D]}`} />
+                      <div className={`absolute inset-0 z-0 opacity-0 ${processing ? '' : 'group-hover:opacity-100'} transition-opacity duration-300 ease-in-out pointer-events-none bg-gradient-to-r from-[#D94A1E] to-[#FF9A3D]`} />
                       <span className={`relative z-10 text-[#D94A1E] ${processing ? '' : 'group-hover:text-white'} transition-colors duration-300 ease-in-out`}>
                         Replace Image
                       </span>
@@ -1257,41 +1264,54 @@ export function BackgroundRemover() {
 
                 {/* Source Metadata or Feature Guide Box */}
                 {dataUrl ? (
-                  <div className="w-full min-w-0 max-w-full rounded-[16px] border border-[#E2E8F0] bg-[#FAF9F6] p-[12px] md:p-[14px] flex flex-col justify-between mt-[12px] transition-all">
-                    <div className="flex min-w-0 flex-wrap items-center justify-between gap-[6px]">
-                      <div className="flex items-center gap-[8px] min-w-0">
-                        <div className="px-1.5 min-w-[24px] h-[24px] rounded-md bg-white border border-gray-200 flex items-center justify-center shrink-0">
-                          <span className="font-heading font-bold text-[9px] text-brand-primary">
-                            {fileExt}
-                          </span>
-                        </div>
-                        <span className="font-body font-semibold text-[12px] md:text-[13px] text-[#202427] truncate">
+                  <div className="w-full min-w-0 max-w-full rounded-[16px] border border-[#E2E8F0] bg-white p-[14px] md:p-[16px] flex flex-col gap-3 mt-[12px] shadow-xs transition-all">
+                    {/* Header: file format pill + file name + size badge */}
+                    <div className="flex min-w-0 items-center justify-between gap-2 pb-2.5 border-b border-[#F1F5F9]">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <span className="px-2 py-0.5 rounded-md bg-orange-50 border border-orange-200/80 font-heading font-bold text-[10px] text-brand-primary uppercase shrink-0">
+                          {fileExt}
+                        </span>
+                        <span className="font-heading font-semibold text-[13px] text-[#202427] truncate">
                           {imageName || "image.png"}
                         </span>
                       </div>
-                      <span className="font-body text-[10px] md:text-[11px] text-[#64748B] font-mono shrink-0">
+                      <span className="font-mono text-[11px] text-[#64748B] bg-[#F8FAFC] border border-[#E2E8F0] px-2 py-0.5 rounded-md shrink-0">
                         {formatFileSize(imageSize)}
                       </span>
                     </div>
-                    <div className="flex min-w-0 items-stretch gap-[6px]">
-                      <div className="flex-1 bg-white border border-gray-200/80 rounded-md px-[6px] py-[3px] md:py-[4px] flex flex-col min-w-0">
-                        <span className="text-[#64748B] text-[9px] md:text-[10px] font-body leading-[1.2]">Dimensions</span>
-                        <strong className="font-medium text-[#202427] text-[11px] md:text-[12px] truncate leading-[1.2]">
+
+                    {/* Dimensions & Scale Stats Grid */}
+                    <div className="grid grid-cols-3 gap-2 min-w-0">
+                      <div className="bg-[#FAF9F6] border border-[#E2E8F0] rounded-xl p-2 flex flex-col items-center justify-center text-center">
+                        <span className="text-[10px] font-body font-medium text-[#64748B] uppercase tracking-wider">{t("dimensions")}</span>
+                        <span className="text-[12px] font-mono font-semibold text-[#202427] mt-0.5">
                           {imageDims ? `${imageDims.width}×${imageDims.height}` : "—"}
-                        </strong>
+                        </span>
                       </div>
-                      <div className="flex-1 bg-white border border-gray-200/80 rounded-md px-[6px] py-[3px] md:py-[4px] flex flex-col min-w-0">
-                        <span className="text-[#64748B] text-[9px] md:text-[10px] font-body leading-[1.2]">Aspect</span>
-                        <strong className="font-medium text-[#202427] text-[11px] md:text-[12px] truncate leading-[1.2]">
+                      <div className="bg-[#FAF9F6] border border-[#E2E8F0] rounded-xl p-2 flex flex-col items-center justify-center text-center">
+                        <span className="text-[10px] font-body font-medium text-[#64748B] uppercase tracking-wider">{t("aspect")}</span>
+                        <span className="text-[12px] font-mono font-semibold text-[#202427] mt-0.5">
                           {imageDims ? (imageDims.width / imageDims.height).toFixed(2) : "—"}
-                        </strong>
+                        </span>
+                      </div>
+                      <div className="bg-[#FAF9F6] border border-[#E2E8F0] rounded-xl p-2 flex flex-col items-center justify-center text-center">
+                        <span className="text-[10px] font-body font-medium text-[#64748B] uppercase tracking-wider">{t("scale")}</span>
+                        <span className="text-[12px] font-mono font-semibold text-brand-primary mt-0.5">
+                          {scale}%
+                        </span>
                       </div>
                     </div>
-                    <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-[8px] text-[10px] md:text-[11px] text-[#64748B] border-t border-gray-200/80 pt-[4px]">
-                      <span className="truncate">
-                        {bgOption === "Custom" ? customColor : bgOption} &middot; {scale}%
+
+                    {/* Footer Status Bar */}
+                    <div className="flex items-center justify-between text-[11px] text-[#64748B] pt-1">
+                      <span className="flex items-center gap-1.5 truncate">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                        <span className="font-medium text-[#334155]">Background:</span>
+                        <span className="truncate">{addedBackground ? "Custom Added" : bgOption}</span>
                       </span>
-                      <span className="text-brand-primary font-medium shrink-0 ml-2">Ready</span>
+                      <span className="text-[10px] font-mono font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full shrink-0">
+                        Ready
+                      </span>
                     </div>
                   </div>
                 ) : (
@@ -1348,33 +1368,44 @@ export function BackgroundRemover() {
                     {hasResult ? t("resultLabel") : t("ui.livePreview")}
                   </h2>
 
-                  {/* Mode Tabs (Before / After) */}
-                  {hasResult && (
-                    <div className="flex items-center gap-[4px] bg-[#F1F5F9] p-[3px] rounded-[8px]">
+                  {/* Mode Tabs (Before / After) and Reset Button */}
+                  <div className="flex items-center gap-[8px]">
+                    {addedBackground && (
                       <button
                         type="button"
-                        onClick={() => setPreviewMode("before")}
-                        className={`px-[10px] py-[3px] rounded-[6px] font-body text-[12px] font-medium transition-all cursor-pointer ${
-                          previewMode === "before"
-                            ? "bg-white text-brand-primary shadow-xs"
-                            : "text-[#64748B] hover:text-[#202427]"
-                        }`}
+                        onClick={resetAddedBackground}
+                        className="px-[10px] py-[4px] rounded-[6px] font-body text-[12px] font-medium bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 transition-colors shadow-xs"
                       >
-                        {t("originalLabel")}
+                        {t("ui.removeAddedBackground")}
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => setPreviewMode("after")}
-                        className={`px-[10px] py-[3px] rounded-[6px] font-body text-[12px] font-medium transition-all cursor-pointer ${
-                          previewMode === "after"
-                            ? "bg-white text-brand-primary shadow-xs"
-                            : "text-[#64748B] hover:text-[#202427]"
-                        }`}
-                      >
-                        {t("resultLabel")}
-                      </button>
-                    </div>
-                  )}
+                    )}
+                    {hasResult && (
+                      <div className="flex items-center gap-[4px] bg-[#F1F5F9] p-[3px] rounded-[8px]">
+                        <button
+                          type="button"
+                          onClick={() => setPreviewMode("before")}
+                          className={`px-[10px] py-[3px] rounded-[6px] font-body text-[12px] font-medium transition-all cursor-pointer ${
+                            previewMode === "before"
+                              ? "bg-white text-brand-primary shadow-xs"
+                              : "text-[#64748B] hover:text-[#202427]"
+                          }`}
+                        >
+                          {t("originalLabel")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPreviewMode("after")}
+                          className={`px-[10px] py-[3px] rounded-[6px] font-body text-[12px] font-medium transition-all cursor-pointer ${
+                            previewMode === "after"
+                              ? "bg-white text-brand-primary shadow-xs"
+                              : "text-[#64748B] hover:text-[#202427]"
+                          }`}
+                        >
+                          {t("resultLabel")}
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Main Preview Container */}
@@ -1491,27 +1522,40 @@ export function BackgroundRemover() {
                     )}
 
                     {backgroundTab === "Photo" && (
-                      <div className="flex flex-wrap items-center gap-3 rounded-[12px] border border-dashed border-[#CBD5E1] bg-[#F8FAFC] p-3">
-                        <input
-                          ref={backgroundFileRef}
-                          type="file"
-                          accept="image/png,image/jpeg,image/webp"
-                          className="hidden"
-                          onChange={(event) => {
-                            handleBackgroundPhoto(event.target.files?.[0]);
-                            event.target.value = "";
-                          }}
-                        />
-                        <div className="min-w-0 flex-1">
-                          <p className="font-body text-[12px] font-medium text-[#334155]">{t("ui.usePhotoFromDevice")}</p>
-                          <p className="mt-0.5 font-body text-[10px] text-[#64748B]">{t("ui.photoFormatsLimit")}</p>
-                          {addedBackground?.kind === "photo" && addedBackground.src.startsWith("data:") && (
-                            <p className="mt-1 truncate font-body text-[10px] text-emerald-700">{t("ui.selectedPhoto", { name: addedBackground.name })}</p>
-                          )}
+                      <div className="flex flex-col gap-2">
+                        <div className="flex flex-wrap items-center gap-3 rounded-[12px] border border-dashed border-[#CBD5E1] bg-[#F8FAFC] p-3">
+                          <input
+                            ref={backgroundFileRef}
+                            type="file"
+                            accept="image/png,image/jpeg,image/webp"
+                            className="hidden"
+                            onChange={(event) => {
+                              handleBackgroundPhoto(event.target.files?.[0]);
+                              event.target.value = "";
+                            }}
+                          />
+                          <div className="min-w-0 flex-1">
+                            <p className="font-body text-[12px] font-medium text-[#334155]">{t("ui.usePhotoFromDevice")}</p>
+                            <p className="mt-0.5 font-body text-[10px] text-[#64748B]">{t("ui.photoFormatsLimit")}</p>
+                            {addedBackground?.kind === "photo" && addedBackground.src.startsWith("data:") && (
+                              <p className="mt-1 truncate font-body text-[10px] text-emerald-700">{t("ui.selectedPhoto", { name: addedBackground.name })}</p>
+                            )}
+                          </div>
+                          <button type="button" onClick={() => backgroundFileRef.current?.click()} className="rounded-[8px] bg-white px-3 py-2 text-[11px] font-medium text-[#334155] shadow-sm ring-1 ring-slate-200 hover:bg-slate-50">
+                            {t("ui.uploadOwnPhoto")}
+                          </button>
                         </div>
-                        <button type="button" onClick={() => backgroundFileRef.current?.click()} className="rounded-[8px] bg-white px-3 py-2 text-[11px] font-medium text-[#334155] shadow-sm ring-1 ring-slate-200 hover:bg-slate-50">
-                          {t("ui.uploadOwnPhoto")}
-                        </button>
+                        {addedBackground && (
+                          <div className="flex justify-center mt-1">
+                            <button
+                              type="button"
+                              onClick={resetAddedBackground}
+                              className="rounded-[6px] border border-red-200 bg-red-50 px-3 py-1.5 text-[11px] font-medium text-red-600 hover:bg-red-100 transition-colors shadow-xs"
+                            >
+                              {t("ui.removeAddedBackground")}
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -1531,26 +1575,42 @@ export function BackgroundRemover() {
                             />
                           ))}
                         </div>
-                        <div className="mt-3 flex items-center gap-2">
-                          <input
-                            type="color"
-                            value={addedBackgroundColor}
-                            onChange={(event) => setAddedBackgroundColor(event.target.value.toUpperCase())}
-                            aria-label={t("ui.chooseBackgroundColor")}
-                            className="h-9 w-10 cursor-pointer rounded border-0 bg-transparent p-0"
-                          />
-                          <button type="button" onClick={() => chooseAddedBackground({ kind: "color", color: addedBackgroundColor })} className="rounded-[8px] bg-[#F1F5F9] px-3 py-2 text-[11px] font-medium text-[#334155] hover:bg-slate-200">
-                            {t("ui.chooseCustomColor")}
-                          </button>
+                        <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="color"
+                              value={addedBackgroundColor}
+                              onChange={(event) => {
+                                const newColor = event.target.value.toUpperCase();
+                                setAddedBackgroundColor(newColor);
+                                chooseAddedBackground({ kind: "color", color: newColor });
+                              }}
+                              aria-label={t("ui.chooseBackgroundColor")}
+                              className="h-9 w-10 cursor-pointer rounded border-0 bg-transparent p-0"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => chooseAddedBackground({ kind: "color", color: addedBackgroundColor })}
+                              className="rounded-[8px] bg-[#F1F5F9] px-3 py-2 text-[11px] font-medium text-[#334155] hover:bg-slate-200"
+                            >
+                              {t("ui.chooseCustomColor")}
+                            </button>
+                          </div>
+                          {addedBackground && (
+                            <button
+                              type="button"
+                              onClick={resetAddedBackground}
+                              className="rounded-[6px] border border-red-200 bg-red-50 px-3 py-1.5 text-[11px] font-medium text-red-600 hover:bg-red-100 transition-colors shadow-xs"
+                            >
+                              {t("ui.removeAddedBackground")}
+                            </button>
+                          )}
                         </div>
                       </div>
                     )}
 
                     {staleResult && addedBackground && (
                       <p className="mt-3 rounded-[8px] bg-amber-50 px-3 py-2 text-[11px] text-amber-800">{t("ui.staleBackgroundWarning")}</p>
-                    )}
-                    {addedBackground && bgOption === "Transparent" && !staleResult && (
-                      <button type="button" onClick={resetAddedBackground} className="mt-3 text-[11px] font-medium text-[#64748B] underline underline-offset-2 hover:text-[#334155]">{t("ui.removeAddedBackground")}</button>
                     )}
                   </div>
                 )}
@@ -1645,6 +1705,56 @@ export function BackgroundRemover() {
                       showDescriptions={false}
                     />
                   </div>
+
+                  {/* Dedicated Custom Background Color Card */}
+                  {bgOption === "Custom" && (
+                    <div className="mt-3 p-3.5 rounded-[14px] border border-[#CBD5E1] bg-[#FAF9F6] flex flex-col gap-2.5 shadow-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="font-heading font-semibold text-[13px] text-text-dark">
+                          {t("ui.chooseCustomColor")}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="color"
+                            value={customColor}
+                            onChange={(e) => {
+                              const hex = normalizeHex(e.target.value);
+                              setCustomColor(hex);
+                            }}
+                            className="w-7 h-7 rounded-lg border border-[#CBD5E1] cursor-pointer p-0 bg-transparent shrink-0"
+                            aria-label="Pick custom background color"
+                          />
+                          <input
+                            type="text"
+                            value={customColor}
+                            onChange={(e) => {
+                              const hex = normalizeHex(e.target.value);
+                              setCustomColor(hex);
+                            }}
+                            maxLength={7}
+                            className="w-[74px] h-[30px] px-2 font-mono text-[12px] font-medium border border-[#CBD5E1] rounded-[6px] outline-none focus:border-brand-primary uppercase text-center bg-white"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 flex-wrap pt-2 border-t border-[#F2EDE8]">
+                        <span className="text-[11px] font-body text-[#64748B] mr-1">{t("presetColors")}:</span>
+                        {COLOR_PRESETS.map((c) => (
+                          <button
+                            key={c.hex}
+                            type="button"
+                            title={c.name}
+                            onClick={() => setCustomColor(c.hex)}
+                            className={`w-6 h-6 rounded-full border border-gray-300 transition-all cursor-pointer ${
+                              customColor.toLowerCase() === c.hex.toLowerCase()
+                                ? "scale-110 ring-2 ring-brand-primary ring-offset-1"
+                                : "hover:scale-105"
+                            }`}
+                            style={{ backgroundColor: c.hex }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Error Banner */}
