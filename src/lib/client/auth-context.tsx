@@ -88,8 +88,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('crush_user', JSON.stringify(payload.user))
       localStorage.removeItem('crush_usage_info')
       sessionStorage.setItem('crush_auth_status', 'authed')
-      // The crushsvg_session flag cookie is set by the server next to the
-      // refresh cookie (same lifetime), so it is not written here.
+      // Ensure the non-httpOnly session flag cookie is immediately present on the current host
+      document.cookie = `crushsvg_session=1; path=/; SameSite=Lax${window.location.protocol === 'https:' ? '; Secure' : ''}${payload.remember ? '; max-age=' + (7 * 24 * 60 * 60) : ''}`
       document.documentElement.classList.add('user-logged-in')
       document.documentElement.classList.remove('user-logged-out')
     }
@@ -192,8 +192,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         : null
       const hasActiveSessionFlag = !!sessionCookie && (sessionCookie.split('=')[1]?.trim() ?? '') !== ''
       if (typeof document !== 'undefined' && !hasActiveSessionFlag) {
-        clearAuth()
-        return
+        const hasStoredUser = typeof window !== 'undefined' && !!localStorage.getItem('crush_user')
+        if (!hasStoredUser) {
+          clearAuth()
+          return
+        }
       }
       const { payload, sessionDead } = await refreshSession({ silent: true })
       if (cancelled) return

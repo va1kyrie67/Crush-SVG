@@ -10,12 +10,13 @@ export const SESSION_FLAG_COOKIE_NAME = "crushsvg_session";
 export type { UserDTO, TokenPairDTO, UsageInfo } from "@/lib/shared/shared-types";
 
 export function getRefreshCookieOptions(remember = false) {
+    const domain = process.env.COOKIE_DOMAIN || undefined;
     return {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax" as const,
         path: "/",
-        domain: process.env.NODE_ENV === "production" ? ".crushsvg.net" : undefined,
+        domain,
         maxAge: remember ? 7 * 24 * 60 * 60 : undefined,
     };
 }

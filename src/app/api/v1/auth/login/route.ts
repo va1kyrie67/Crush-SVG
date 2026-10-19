@@ -39,8 +39,8 @@ export async function POST(request: NextRequest) {
     return errorResponse(429, 'account_locked', 'Too many failed login attempts. Please wait before trying again.', { 'Retry-After': String(Math.ceil(bf.retryAfter / 1000)) })
   }
 
-  const user = await User.findOne({ email, password: { $exists: true } })
-  if (!user) {
+  const candidateUsers = await User.find({ email, password: { $exists: true } })
+  if (candidateUsers.length === 0) {
     // The email belongs to a social-only account (Google/GitHub etc., no
     // password set) — "incorrect password" would send the user in circles.
     const socialAccount = await User.findOne({ email, password: { $exists: false } })
@@ -57,12 +57,16 @@ export async function POST(request: NextRequest) {
     await recordFailure(request, `login:${email}`)
     return errorResponse(401, 'invalid_credentials', 'Email or password is incorrect.', undefined, request)
   }
-  if (!user.password) {
-    await recordFailure(request, `login:${email}`)
-    return errorResponse(401, 'invalid_credentials', 'Email or password is incorrect.', undefined, request)
+
+  let user = null
+  for (const candidate of candidateUsers) {
+    if (candidate.password && await verifyPassword(parsed.data.password, candidate.password)) {
+      user = candidate
+      break
+    }
   }
-  const isMatch = await verifyPassword(parsed.data.password, user.password)
-  if (!isMatch) {
+
+  if (!user) {
     await recordFailure(request, `login:${email}`)
     return errorResponse(401, 'invalid_credentials', 'Email or password is incorrect.', undefined, request)
   }
